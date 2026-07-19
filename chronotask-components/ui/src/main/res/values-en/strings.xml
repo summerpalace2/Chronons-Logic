@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>    <string name="app_name">Chronos Logic</string>    <!-- 主页 -->        <string name="notes_title">Notes</string>
+    <string name="nav_home">Home</string>
+    <string name="today_total_time">Today Total</string>
+    <string name="current_tasks">Current Tasks</string>
+    <string name="rest_mode">Resting</string>
+    <string name="working_mode">Working</string>
+    <string name="not_today_no_timer">Cannot start timer for non-today</string>
+    <string name="not_today_no_rest">Cannot set rest for non-today</string>    <!-- Stats -->    <string name="stats_title">Stats</string>
+    <string name="total_time">Total Time</string>
+    <string name="efficiency_trend">Efficiency Trend</string>
+    <string name="rest_day_excluded">(Rest days excluded)</string>
+    <string name="focus_count">Focus Count</string>
+    <string name="flow_condition">Single session ≥90min</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="daily_avg">Daily Avg %s</string>
+    <string name="prev_week_total">Last Week Total</string>
+    <string name="prev_month_total">Last Month Total</string>
+    <string name="prev_year_total">Last Year Total</string>
+    <string name="vs_last_week">vs Last Week</string>
+    <string name="vs_last_month">vs Last Month</string>
+    <string name="vs_last_year">vs Last Year</string>
+    <string name="no_data_compare">No Data to Compare</string>
+    <string name="last_week_short">Last Week</string>
+    <string name="last_month_short">Last Month</string>
+    <string name="last_year_short">Last Year</string>
+    <string name="week_day_avg">Daily Avg</string>
+    <string name="month_avg">Monthly Avg</string>
+    <string name="year_avg">Yearly Avg</string>
+    <string name="tag_distribution">Tag Distribution</string>
+    <string name="time_distribution">%s Distribution</string>
+    <string name="flow_info_title">Focus Info</string>
+    <string name="flow_info_text">Single session ≥90min counts as one focus</string>    <!-- Task Detail -->    <string name="task_detail_title">Task Detail</string>
+    <string name="task_title_label">Task Title</string>
+    <string name="progress">Progress</string>
+    <string name="recording">Recording</string>
+    <string name="start">Start</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="note_label">Note</string>
+    <string name="timer_note">Timer Note</string>
+    <string name="note_placeholder">Write your thoughts…</string>    <!-- Note Editor -->    <string name="note_editor_title">Edit Note</string>
+    <string name="note_editor_save">Save</string>
+    <string name="note_editor_cancel">Cancel</string>
+    <string name="note_editor_title_hint">Enter title</string>
+    <string name="note_editor_content_hint">Enter content</string>
+    <string name="note_editor_add_section">Add Section</string>
+    <string name="note_editor_timer">Timer</string>
+    <string name="note_editor_stats">Stats</string>
+    <string name="note_editor_upload_image">Upload Image</string>
+    <string name="note_editor_take_photo">Take Photo</string>
+    <string name="no_target">No target set</string>
+    <string name="completed_percent">%s%% Completed</string>
+    <string name="horizontal_comparison_title">Comparison</string>
+    <string name="this_week_avg">This Week Avg</string>
+    <string name="this_month_avg">This Month Avg</string>    <!-- Settings -->    <string name="settings_title">Settings</string>
+    <string name="edit_name">Edit Name</string>
+    <string name="change_avatar">Change Avatar</string>
+    <string name="appearance">Appearance</string>
+    <string name="theme">Theme</string>
+    <string name="font">Font</string>
+    <string name="functions">Functions</string>
+    <string name="horizontal_comparison_toggle">Horizontal Comparison</string>
+    <string name="workday_settings">Workday Settings</string>
+    <string name="workday_default">Mon - Fri</string>
+    <string name="system">System</string>
+    <string name="language">Language</string>
+    <string name="notifications">Notifications</string>
+    <string name="daily_reminder">Daily Reminder</string>
+    <string name="about_app">About App</string>
+    <string name="about_author">About Author</string>
+    <string name="personal_info">Personal Info</string>
+    <string name="enter_name_hint">Enter your name</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>    <!-- Theme Settings -->    <string name="theme_settings">Theme Settings</string>
+    <string name="theme_scheme">Theme Scheme</string>
+    <string name="preview_mode">Preview Mode</string>
+    <string name="light_mode">Light</string>
+    <string name="dark_mode">Dark</string>
+    <string name="color_preview">%s Color Preview</string>    <!-- Font Settings -->    <string name="font_settings">Font Settings</string>
+    <string name="font_size">Font Size</string>
+    <string name="font_preview_title">Chronos Logic Time Management</string>
+    <string name="font_preview_text">The quick brown fox jumps over the lazy dog.</string>
+    <string name="current_font_size">Current size: %dpx</string>
+    <string name="font_small">Small</string>
+    <string name="font_large">Large</string>    <!-- Language Settings -->    <string name="language_settings">Language Settings</string>    <!-- Notification Settings -->    <string name="notification_settings">Notification Settings</string>
+    <string name="notification_reminder">Reminders</string>
+    <string name="task_complete_notify">Task Complete</string>
+    <string name="weekly_report">Weekly Report</string>
+    <string name="reminder_time">Reminder Time</string>
+    <string name="morning_reminder">Morning Reminder</string>
+    <string name="evening_reminder">Evening Summary</string>    <!-- About App -->    <string name="about_app_title">About App</string>
+    <string name="core_features">Core Features</string>
+    <string name="rating">Rate Us</string>
+    <string name="user_agreement">User Agreement</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="contact_us">Contact Us</string>    <!-- About Author -->    <string name="about_author_title">About Author</string>
+    <string name="support_project">Support Project</string>
+    <string name="support_text">If you find Chronos Logic useful, buy the author a coffee to support future development.</string>
+    <string name="buy_coffee">☕ Buy me a coffee</string>    <!-- Stats trend & misc -->    <string name="trend_up">Up</string>
+    <string name="prev_period_label">Previous Period</string>
+    <string name="trend_down">Down</string>
+    <string name="flow_info_hint">Flow Info</string>
+    <string name="focus_count_value">%d times</string>    <!-- Theme descriptions -->    <string name="theme_name_forest">Forest Silence</string>
+    <string name="theme_name_midnight">Deep Midnight</string>
+    <string name="theme_name_nordic">Nordic Grey</string>
+    <string name="theme_name_sunset">Sunset Rose</string>
+    <string name="theme_name_obsidian">Obsidian Gold</string>
+    <string name="theme_desc_forest">Deep forest tranquility · Focus &amp; calm</string>
+    <string name="theme_desc_midnight">Classic deep blue · Order &amp; trust</string>
+    <string name="theme_desc_nordic">Nordic cool grey · Minimal &amp; pure</string>
+    <string name="theme_desc_sunset">Twilight dawn · Warm &amp; gentle</string>
+    <string name="theme_desc_obsidian">Obsidian gold · Noble &amp; refined</string>    <!-- Font descriptions -->    <string name="font_desc_inter">Android system default sans-serif font.</string>
+    <string name="font_desc_roboto">Classic serif font, rigorous structure.</string>
+    <string name="font_desc_pingfang">Chinese sans-serif, elegant &amp; beautiful.</string>
+    <string name="font_desc_sourcehan">Monospace font, rich weights, coding feel.</string>    <!-- Missing shared keys -->    <string name="delete">Delete</string>
+    <string name="clear">Clear</string>
+    <string name="edit">Edit</string>
+    <string name="search">Search</string>
+    <string name="search_title_hint">Search title...</string>
+    <string name="no_results">No Results</string>
+    <string name="search_notes_hint">Search notes...</string>    <!-- Navigation & Actions -->    <string name="back">Back</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="timer">Timer</string>
+    <string name="target_duration">Target Duration</string>
+    <string name="select_date">Select Date</string>
+    <string name="unlimited">Unlimited</string>
+    <string name="set_target">Set Target</string>
+    <string name="set_target_duration">Set Target Duration</string>
+    <string name="modify">Modify</string>
+    <string name="set_unlimited">Set Unlimited</string>    <!-- Missing settings keys -->                                                                            
+    <!-- Create/Tag keys -->
+    <string name="add_tag">Add Tag</string>
+    <string name="enter_tag_name">Enter tag name</string>
+    <string name="tag_empty_error">Tag name cannot be empty</string>
+    <string name="tag_exists_error">Tag &quot;%s&quot; already exists</string>
+    <string name="tag_work">Work</string>
+    <string name="tag_study">Study</string>
+    <string name="tag_fitness">Fitness</string>
+    <string name="edit_task">Edit Task</string>
+    <string name="new_task">New Task</string>
+    <string name="save">Save</string>
+    <string name="task_title_hint">e.g. Deep Work</string>
+    <string name="category">Category</string>
+
+    <!-- Calendar/Date -->
+    <string name="date_picker">Date Picker</string>
+    <string name="prev_week">Previous Week</string>
+    <string name="next_week">Next Week</string>
+    <string name="close">Close</string>
+    <string name="prev_month">Previous Month</string>
+    <string name="next_month">Next Month</string>
+    <string name="weekday_sun">Sun</string>
+    <string name="weekday_mon">Mon</string>
+    <string name="weekday_tue">Tue</string>
+    <string name="weekday_wed">Wed</string>
+    <string name="weekday_thu">Thu</string>
+    <string name="weekday_fri">Fri</string>
+    <string name="weekday_sat">Sat</string>
+
+    <!-- Tasks -->
+    <string name="done">Done</string>
+    <string name="new_task_cd">New Task</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="delete_task_msg">Are you sure you want to delete this task?&#10;This action cannot be undone.</string>
+    <string name="completed">Completed</string>
+    <string name="no_active_tasks">No active tasks&#10;Tap + to create</string>
+    <string name="feature_calendar">Calendar Task Management</string>
+    <string name="feature_timer">Immersive Timer Experience</string>
+    <string name="feature_stats">Smart Data Analytics</string>
+    <string name="feature_rest">Rest Mode</string>
+    <string name="feature_calendar_desc">Seamlessly integrate tasks into calendar view, visually manage daily schedules, drag to adjust.</string>
+    <string name="feature_timer_desc">Supports count-up and countdown timers, full-screen immersive mode eliminates distractions.</string>
+    <string name="feature_stats_desc">Multi-dimensional analysis of time usage with visual charts to optimize productivity.</string>
+    <string name="feature_rest_desc">Scientifically plan work and rest intervals, prevent burnout with white noise relaxation.</string>
+    <string name="app_description">Chronos Logic is a time management tool designed for deep workers. With calendar-based task views and immersive timer experiences, it helps you manage every day more efficiently.</string>
+    <string name="about_author_bio">Indie developer and designer, passionate about building lifestyle-changing productivity tools.</string>
+    <string name="contact_github">GitHub</string>
+    <string name="contact_twitter">Twitter / X</string>
+    <string name="contact_portfolio">Portfolio</string>
+    <string name="color_primary">Primary</string>
+    <string name="color_secondary">Secondary</string>
+    <string name="color_tertiary">Tertiary</string>
+    <string name="color_background">Background</string>
+    <string name="color_surface">Surface</string>
+    <string name="no_category">Uncategorized</string>
+    <string name="unknown">Unknown</string>
+    <string name="char_count">%d chars</string>
+    <string name="expand">Expand</string>
+    <string name="collapse">Collapse</string>
+    <string name="timer_toolbar">Timer</string>
+    <string name="note_toolbar">Note</string>
+    <string name="flow_info_body">Focus count tracks deep work sessions of 90 minutes (1.5 hours) or more.</string>
+    <string name="flow_info_why_title">Why 90 minutes?</string>
+    <string name="flow_info_why_body">Psychological research shows entering flow state typically requires a 15-20 minute warm-up. Optimal flow duration is 60-90 minutes, closely matching the human ultradian rhythm.</string>
+    <string name="flow_info_strategy_title">Suggested Strategy</string>
+    <string name="flow_info_strategy_body">• Set 90-minute distraction-free blocks&#10;• Allow yourself 20 minutes to warm up&#10;• Once in flow, follow it naturally&#10;• Stop and rest when mentally scattered</string>
+    <string name="flow_info_daily_limit">Daily deep work is recommended at 3-4 hours max; exceeding this sharply reduces output quality.</string>
+    <string name="rest_day_note">* Rest days are excluded from statistics</string>
+    <string name="got_it">Got it</string>
+    <string name="focus_count_title">What is Focus Count?</string>
+    <string name="search_results">Search Results</string>
+    <string name="close_search">Close Search</string>
+    <string name="settings_more">More</string>
+    <string name="stats_period_week">Week</string>
+    <string name="stats_period_month">Month</string>
+    <string name="stats_period_year">Year</string>
+    <string name="tag_management">Tag Management</string>
+    <string name="font_name_inter">Inter / System Default</string>
+    <string name="font_name_roboto">Roboto / Serif</string>
+    <string name="font_name_pingfang">PingFang / Sans-serif</string>
+    <string name="font_name_sourcehan">Source Han / Monospace</string>
+    <string name="delete_tag_confirm">Delete tag "%s"?</string>
+    <string name="add_note">Add Note</string>
+    <string name="view_note">Read</string>
+    <string name="note_title_hint">Title (optional)</string>
+    <string name="note_edit_hint">Tap to edit</string>
+    <string name="no_notes_yet">No notes yet, tap + to start</string>
+
+    <!-- Settings localization -->
+    <string name="avatar">Avatar</string>
+    <string name="unnamed_task">Untitled Task</string>
+    <string name="uncategorized">Uncategorized</string>
+    <string name="target">Target</string>
+    <string name="quick_import">Quick Import</string>
+    <string name="edit_quick_import">Edit Quick Import</string>
+    <string name="set_workday">Set Workday</string>
+    <string name="empty_quick_import">No import items, tap + to add</string>
+    <string name="support_author">If you find Chronos Logic useful, you can buy the author a coffee to support future development.</string>
+    <!-- Chart labels & date formats for locale switching -->
+    <string name="day">Day</string>
+    <string name="chart_day_label">Day %s</string>
+    <string name="chart_week_label">Week %s</string>
+    <string name="chart_month_label">Month %s</string>
+    <string name="date_format_full">MMM d, yyyy</string>
+    <string name="date_format_short">MMM d</string>
+    <string name="imported">Imported</string>
+    <string name="new_import_task">New Import Task</string>
+    <string name="honesty_reminder">If you forget to time your task on the day, you can manually edit an approximate time. Remember not to cheat yourself!</string>
+    <string name="title_colon">Title: %s</string>
+    <string name="return_all">Return All</string>
+    <string name="workday_mode_toggle">Workday Mode</string>
+    <string name="workday_range">Workday Range</string>
+    <string name="workday_range_hint">Select workdays of a week. Non-workdays will be automatically marked as rest.</string>
+    <string name="workday_note">Note: Auto-marking runs at midnight daily. Affects daily quick-import filtering.</string>
+    <string name="note_editor_placeholder">Enter text...</string>
+    <string name="delete_note_msg">Are you sure you want to delete this note?</string>
+    <string name="refresh_time">Refresh Time</string>
+    <string name="refresh_time_subtitle">Set when a new day starts (default 0:00)</string>
+    <string name="refresh_time_hint">Timer auto-stops at this hour. Suits late sleepers (1-5 AM).</string>
+    
+    
+    
+    
+    
+
+    <string name="feature_notes">Notes</string>
+    <string name="feature_notes_desc">Record inspirations and ideas during timing, making every time period traceable.</string>
+    <string name="feature_quick_import">Quick Import</string>
+    <string name="feature_quick_import_desc">Preset repetitive tasks as import templates, auto-injected every workday.</string>
+    <string name="feature_comparison">Comparison</string>
+    <string name="feature_comparison_desc">Aggregate same-title tasks to track execution trends and changes.</string>
+    <string name="feature_theme">Theme &amp; Font</string>
+    <string name="feature_theme_desc">Multiple color themes and adjustable font sizes for a personalized experience.</string>
+    <string name="feature_workday">Work Mode</string>
+    <string name="feature_workday_desc">Customize workdays, auto-mark rest days, for more accurate statistics.</string>
+    <string name="feature_refresh">Refresh Time</string>
+    <string name="feature_refresh_desc">Customize day start time for late sleepers, uninterrupted cross-day timing.</string>
+
+
+    <string name="app_version">Version 1.2.0</string>
+    <string name="app_version_build">Build 842</string>
+    <string name="dialog_ok">OK</string>
+    <string name="horizontal_comparison_info">Based on Quick Import, aggregate same-title tasks to show daily averages for this week and month, tracking execution trends.</string>
+    <string name="quick_import_info">Preset repetitive tasks as import templates, auto-injected into daily task list every workday.</string>
+    <string name="quick_import_title">Quick Import</string>
+    <string name="refresh_time_info">Due to modern late-night lifestyles, you can manually set the start time of a day (default 0:00). Timer auto-stops at the set hour to separate yesterday from today.</string>
+    <string name="refresh_time_title">Refresh Time</string>
+    <string name="workday_settings_info">Customize weekly workdays. Unselected days are auto-marked as rest days and linked with stats features.</string>
+    <string name="workday_settings_title">Workday Settings</string>
+</resources>

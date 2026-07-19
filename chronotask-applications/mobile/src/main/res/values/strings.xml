@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Chronos Logic</string>
+
+    <!-- 主页 -->
+    <string name="today_total_time">今日总用时</string>
+    <string name="current_tasks">当前任务</string>
+    <string name="rest_mode">休息中</string>
+    <string name="working_mode">工作中</string>
+    <string name="not_today_no_timer">非当天日期不可计时</string>
+    <string name="not_today_no_rest">非当天日期不可设置休息</string>
+
+    <!-- 统计页 -->
+    <string name="stats_title">统计</string>
+    <string name="total_time">总计时间</string>
+    <string name="efficiency_trend">效率趋势</string>
+    <string name="rest_day_excluded">（休息日不参与统计）</string>
+    <string name="focus_count">专注次数</string>
+    <string name="flow_condition">单次≥90分钟</string>
+    <string name="week">周</string>
+    <string name="month">月</string>
+    <string name="year">年</string>
+    <string name="daily_avg">日均 %s</string>
+    <string name="prev_week_total">上周总时间</string>
+    <string name="prev_month_total">上月总时间</string>
+    <string name="prev_year_total">上年总时间</string>
+    <string name="vs_last_week">较上周</string>
+    <string name="vs_last_month">较上月</string>
+    <string name="vs_last_year">较上年</string>
+    <string name="no_data_compare">无数据比较</string>
+    <string name="week_day_avg">日均时间</string>
+    <string name="month_avg">月均时间</string>
+    <string name="year_avg">年均时间</string>
+    <string name="tag_distribution">分类统计</string>
+    <string name="time_distribution">%s 时间分布</string>
+    <string name="flow_info_title">专注说明</string>
+    <string name="flow_info_text">单次计时≥90分钟 计为一次专注</string>
+
+    <!-- 任务详情 -->
+    <string name="task_detail_title">任务详情</string>
+    <string name="task_title_label">任务标题</string>
+    <string name="progress">进度</string>
+    <string name="recording">记录中</string>
+    <string name="start">开始</string>
+    <string name="pause">暂停</string>
+    <string name="stop">停止</string>
+    <string name="note_label">笔记</string>
+    <string name="timer_note">计时笔记</string>
+    <string name="note_placeholder">记录你的想法…</string>
+    <string name="no_target">未设置目标时长</string>
+    <string name="completed_percent">%s%% 已完成</string>
+    <!-- 笔记编辑器 -->
+    <string name="note_editor_title">编辑笔记</string>
+    <string name="note_editor_save">保存</string>
+    <string name="note_editor_cancel">取消</string>
+    <string name="note_editor_title_hint">请输入标题</string>
+    <string name="note_editor_content_hint">请输入正文</string>
+    <string name="note_editor_add_section">添加栏目</string>
+    <string name="note_editor_timer">计时</string>
+    <string name="note_editor_stats">统计</string>
+    <string name="note_editor_upload_image">上传图片</string>
+    <string name="note_editor_take_photo">拍摄照片</string>
+    <string name="horizontal_comparison_title">横向对比</string>
+    <string name="this_week_avg">本周日均</string>
+    <string name="this_month_avg">本月日均</string>
+
+    <!-- 设置 -->
+    <string name="settings_title">设置</string>
+    <string name="edit_name">编辑名称</string>
+    <string name="change_avatar">更换头像</string>
+    <string name="appearance">外观</string>
+    <string name="theme">主题</string>
+    <string name="font">字体</string>
+    <string name="functions">功能</string>
+    <string name="horizontal_comparison_toggle">横向对比</string>
+    <string name="workday_settings">工作日设置</string>
+    <string name="workday_default">周一至周五</string>
+    <string name="system">系统</string>
+    <string name="language">语言</string>
+    <string name="notifications">通知</string>
+    <string name="daily_reminder">每日提醒</string>
+    <string name="about_app">关于应用</string>
+    <string name="about_author">关于作者</string>
+    <string name="personal_info">个人信息</string>
+    <string name="enter_name_hint">输入你的名称</string>
+    <string name="confirm">确定</string>
+    <string name="cancel">取消</string>
+
+    <!-- 主题设置 -->
+    <string name="theme_settings">主题设置</string>
+    <string name="theme_scheme">主题方案</string>
+    <string name="preview_mode">预览模式</string>
+    <string name="light_mode">浅色</string>
+    <string name="dark_mode">深色</string>
+    <string name="color_preview">%s 配色预览</string>
+
+    <!-- 字体设置 -->
+    <string name="font_settings">字体设置</string>
+    <string name="font_size">字体大小</string>
+    <string name="font_preview_title">Chronos Logic 时间管理</string>
+    <string name="font_preview_text">The quick brown fox jumps over the lazy dog.</string>
+    <string name="current_font_size">当前字号：%dpx</string>
+    <string name="font_small">小</string>
+    <string name="font_large">大</string>
+
+    <!-- 语言设置 -->
+    <string name="language_settings">语言设置</string>
+
+    <!-- 通知设置 -->
+    <string name="notification_settings">通知设置</string>
+    <string name="notification_reminder">通知提醒</string>
+    <string name="task_complete_notify">任务完成通知</string>
+    <string name="weekly_report">周报推送</string>
+    <string name="reminder_time">提醒时间</string>
+    <string name="morning_reminder">每日早间提醒</string>
+    <string name="evening_reminder">晚间总结提醒</string>
+
+    <!-- 关于应用 -->
+    <string name="about_app_title">关于应用</string>
+    <string name="core_features">核心功能</string>
+    <string name="rating">去评分</string>
+    <string name="user_agreement">用户协议</string>
+    <string name="privacy_policy">隐私政策</string>
+    <string name="contact_us">联系我们</string>
+
+    <!-- 关于作者 -->
+    <string name="about_author_title">关于作者</string>
+    <string name="support_project">支持项目</string>
+    <string name="support_text">如果你觉得 Chronos Logic 有用，可以请作者喝杯咖啡来支持未来的开发。</string>
+    <string name="buy_coffee">☕ Buy me a coffee</string>
+    <!-- New localized strings -->
+    <string name="add_tag">添加标签</string>
+    <string name="enter_tag_name">输入标签名称</string>
+    <string name="tag_empty_error">标签名不能为空</string>
+    <string name="tag_exists_error">标签「%s」已存在</string>
+    <string name="new_task">新建任务</string>
+    <string name="edit_task">编辑任务</string>
+    <string name="save">保存</string>
+    <string name="task_title_hint">例如：深度工作</string>
+    <string name="category">分类</string>
+    <string name="target_duration">目标时长</string>
+    <string name="unlimited">无限制</string>
+    <string name="set_target">设置目标</string>
+    <string name="modify">修改</string>
+    <string name="set_unlimited">设为无限制</string>
+    <string name="tag_work">工作</string>
+    <string name="tag_study">学习</string>
+    <string name="tag_fitness">健身</string>
+    <string name="close">关闭</string>
+    <string name="select_date">选择日期</string>
+    <string name="today">今日</string>
+    <string name="prev_month">上一月</string>
+    <string name="next_month">下一月</string>
+    <string name="date_picker">日期选择</string>
+    <string name="prev_week">上一周</string>
+    <string name="next_week">下一周</string>
+    <string name="yesterday">昨天</string>
+    <string name="search">搜索</string>
+    <string name="search_notes_hint">搜索笔记...</string>
+    <string name="clear">清除</string>
+    <string name="delete">删除</string>
+    <string name="no_results">无匹配结果</string>
+    <string name="back">返回</string>
+    <string name="timer">计时</string>
+    <string name="edit">编辑</string>
+    <string name="set_target_duration">设置目标时长</string>
+    <string name="weekday_sun">日</string>
+    <string name="weekday_mon">一</string>
+    <string name="weekday_tue">二</string>
+    <string name="weekday_wed">三</string>
+    <string name="weekday_thu">四</string>
+    <string name="weekday_fri">五</string>
+    <string name="weekday_sat">六</string>
+    <string name="done">完成</string>
+    <string name="new_task_cd">新建任务</string>
+    <string name="confirm_delete">确认删除</string>
+    <string name="delete_task_msg">确定要删除这个任务吗？\n删除后无法恢复。</string>
+
+    <!-- 任务卡片图标描述 -->
+    <string name="completed">已完成</string>
+    <string name="no_active_tasks">暂无活动任务\n点击 + 按钮创建</string>
+
+    <!-- 关于应用 - 特性描述 -->
+    <string name="feature_calendar">日历化清单管理</string>
+    <string name="feature_timer">沉浸式计时体验</string>
+    <string name="feature_stats">智能数据统计</string>
+    <string name="feature_rest">休息模式</string>
+    <string name="feature_calendar_desc">将任务无缝集成至日历视图，直观掌控每日安排，拖拽调整，灵活应对变化。</string>
+    <string name="feature_timer_desc">支持正时与倒计时，全屏沉浸模式屏蔽干扰，极简界面让您专注当下任务。</string>
+    <string name="feature_stats_desc">多维度解析时间去向，生成可视化图表，帮助您复盘工作效率，优化时间分配。</string>
+    <string name="feature_rest_desc">科学规划工作与休息间隔，防止过度疲劳，白噪音辅助放松，快速恢复精力。</string>
+    <string name="app_description">Chronos Logic 是一款专为深度工作者设计的时间管理工具。通过日历化的任务视图和沉浸式计时体验，帮助您更高效地管理每一天的时间。</string>
+
+    <!-- 关于作者 -->
+    <string name="about_author_bio">独立开发者与设计师，热衷于构建改变生活方式的效率工具。</string>
+    <string name="contact_github">GitHub</string>
+    <string name="contact_twitter">Twitter / X</string>
+    <string name="contact_portfolio">作品集</string>
+
+    <!-- 主题色名 -->
+    <string name="color_primary">主色</string>
+    <string name="color_secondary">辅色</string>
+    <string name="color_tertiary">第三色</string>
+    <string name="color_background">背景</string>
+    <string name="color_surface">表面</string>
+
+    <!-- 统计 ViewModel -->
+    <string name="no_category">未分类</string>
+    <string name="unknown">未知</string>
+
+    <!-- 笔记 -->
+    <string name="char_count">%d字</string>
+    <string name="expand">展开</string>
+    <string name="collapse">收起</string>
+    <string name="timer_toolbar">计时</string>
+    <string name="note_toolbar">笔记</string>
+
+    <!-- 统计页 - 心流说明弹窗 -->
+    <string name="flow_info_body">专注次数统计的是单次计时超过90分钟（1.5小时）的深度工作记录。</string>
+    <string name="flow_info_why_title">为什么是90分钟？</string>
+    <string name="flow_info_why_body">根据心理学研究，进入心流状态通常需要15-20分钟的热身期。最佳单次心流持续时长为60-90分钟，这与人体的基础休息-活动周期高度吻合。</string>
+    <string name="flow_info_strategy_title">建议策略</string>
+    <string name="flow_info_strategy_body">• 设定90分钟的免打扰时间块\n• 前20分钟允许自己慢热和挣扎\n• 一旦进入状态，顺其自然\n• 感到精神涣散时立即停止休息</string>
+    <string name="flow_info_daily_limit">每日深度心流总量上限建议为3-4小时，超过此限度产出质量会急剧下降。</string>
+    <string name="rest_day_note">* 休息日不计入统计计算</string>
+    <string name="got_it">我知道了</string>
+    <string name="focus_count_title">什么是专注次数？</string>
+    <string name="search_results">搜索结果</string>
+    <string name="close_search">关闭搜索</string>
+
+    <!-- Stats trend & misc -->
+    <string name="trend_up">上升</string>
+    <string name="prev_period_label">对比周期</string>
+    <string name="trend_down">下降</string>
+    <string name="flow_info_hint">心流说明</string>
+    <string name="focus_count_value">%d次</string>
+
+    <!-- Theme descriptions -->
+    <string name="theme_desc_forest">深林静谧 · 专注与沉静</string>
+    <string name="theme_desc_midnight">经典深蓝 · 秩序与信任</string>
+    <string name="theme_desc_nordic">北欧冷灰 · 简约与纯净</string>
+    <string name="theme_desc_sunset">暮色晨曦 · 温暖与柔和</string>
+    <string name="theme_desc_obsidian">曜石金沙 · 尊贵与精致</string>
+
+    <!-- Font descriptions -->
+    <string name="font_desc_inter">Android 系统默认无衬线字体。</string>
+    <string name="font_desc_roboto">典雅衬线字体，结构严谨。</string>
+    <string name="font_desc_pingfang">中文无衬线，优雅美观。</string>
+    <string name="font_desc_sourcehan">等宽字体，字重丰富，代码感。</string>
+</resources>

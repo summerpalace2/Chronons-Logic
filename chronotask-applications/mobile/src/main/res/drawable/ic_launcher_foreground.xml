@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Progress ring (270° arc) -->
+    <path
+        android:pathData="M54,12 A42,42 0 1,1 19.1,78.9"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"/>
+    <!-- Ring end dot -->
+    <path
+        android:pathData="M16,80 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0"
+        android:fillColor="#FFFFFF"/>
+    <!-- Clock hand -->
+    <path
+        android:pathData="M54,54 L54,26"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="5"
+        android:strokeLineCap="round"/>
+    <!-- Center dot -->
+    <path
+        android:pathData="M54,54 m-5,0 a5,5 0 1,0 10,0 a5,5 0 1,0 -10,0"
+        android:fillColor="#FFFFFF"/>
+    <!-- Check mark -->
+    <path
+        android:pathData="M67,64 L73,70 L83,56"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="#00000000"/>
+</vector>
