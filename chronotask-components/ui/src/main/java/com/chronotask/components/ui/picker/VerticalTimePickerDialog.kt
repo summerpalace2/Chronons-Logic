@@ -1,6 +1,7 @@
 package com.chronotask.components.ui.picker
 
 import android.graphics.Paint
+import android.view.HapticFeedbackConstants
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -45,6 +46,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -184,6 +186,7 @@ private fun VerticalWheel(
 ) {
     val density = LocalDensity.current
     val hapticFeedback = LocalHapticFeedback.current
+    val view = LocalView.current
     val scope = rememberCoroutineScope()
 
     // ── 布局常量 ──
@@ -266,7 +269,7 @@ private fun VerticalWheel(
                         val currentIdx = (currentOffset / itemHeightPx).roundToInt()
                         if (currentIdx != lastScrollIdx) {
                             lastScrollIdx = currentIdx
-                            hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                            view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                         }
 
                         //记录位置历史，松手时用于计算速度
@@ -355,7 +358,7 @@ private fun VerticalWheel(
                                 if (currentIdx != prevAnimIdx) {
                                     prevAnimIdx = currentIdx
                                     lastScrollIdx = currentIdx
-                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                    view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
                                 }
                             }
 
