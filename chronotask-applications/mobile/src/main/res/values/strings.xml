@@ -16,7 +16,7 @@
     <string name="efficiency_trend">效率趋势</string>
     <string name="rest_day_excluded">（休息日不参与统计）</string>
     <string name="focus_count">专注次数</string>
-    <string name="flow_condition">单次≥90分钟</string>
+    <string name="flow_condition">单次会话超过90分钟</string>
     <string name="week">周</string>
     <string name="month">月</string>
     <string name="year">年</string>
@@ -34,7 +34,7 @@
     <string name="tag_distribution">分类统计</string>
     <string name="time_distribution">%s 时间分布</string>
     <string name="flow_info_title">专注说明</string>
-    <string name="flow_info_text">单次计时≥90分钟 计为一次专注</string>
+    <string name="flow_info_text">单次有效计时超过90分钟，计为一次专注</string>
 
     <!-- 任务详情 -->
     <string name="task_detail_title">任务详情</string>
@@ -78,7 +78,6 @@
     <string name="system">系统</string>
     <string name="language">语言</string>
     <string name="notifications">通知</string>
-    <string name="daily_reminder">每日提醒</string>
     <string name="about_app">关于应用</string>
     <string name="about_author">关于作者</string>
     <string name="personal_info">个人信息</string>
@@ -98,22 +97,23 @@
     <string name="font_settings">字体设置</string>
     <string name="font_size">字体大小</string>
     <string name="font_preview_title">Chronos Logic 时间管理</string>
-    <string name="font_preview_text">The quick brown fox jumps over the lazy dog.</string>
-    <string name="current_font_size">当前字号：%dpx</string>
+    <string name="font_preview_text">快速的棕色狐狸跳过懒狗。The quick brown fox jumps over the lazy dog.</string>
+    <string name="current_font_size">当前字号：%dsp</string>
     <string name="font_small">小</string>
     <string name="font_large">大</string>
 
     <!-- 语言设置 -->
     <string name="language_settings">语言设置</string>
 
-    <!-- 通知设置 -->
-    <string name="notification_settings">通知设置</string>
-    <string name="notification_reminder">通知提醒</string>
-    <string name="task_complete_notify">任务完成通知</string>
-    <string name="weekly_report">周报推送</string>
-    <string name="reminder_time">提醒时间</string>
-    <string name="morning_reminder">每日早间提醒</string>
-    <string name="evening_reminder">晚间总结提醒</string>
+    <!-- 前台计时通知 -->
+    <string name="notification_timer_channel">活动计时</string>
+    <string name="notification_timer_channel_description">显示正在进行的任务计时</string>
+    <string name="notification_timer_running">正在计时</string>
+    <string name="notification_timer_paused">计时已暂停</string>
+    <string name="notification_timer_fallback_task">专注任务</string>
+    <string name="notification_timer_pause">暂停</string>
+    <string name="notification_timer_resume">继续</string>
+    <string name="notification_timer_stop">停止</string>
 
     <!-- 关于应用 -->
     <string name="about_app_title">关于应用</string>
@@ -216,7 +216,7 @@
     <string name="note_toolbar">笔记</string>
 
     <!-- 统计页 - 心流说明弹窗 -->
-    <string name="flow_info_body">专注次数统计的是单次计时超过90分钟（1.5小时）的深度工作记录。</string>
+    <string name="flow_info_body">只有单次有效计时超过90分钟，才计为一次专注；多次短计时不会合并计算。</string>
     <string name="flow_info_why_title">为什么是90分钟？</string>
     <string name="flow_info_why_body">根据心理学研究，进入心流状态通常需要15-20分钟的热身期。最佳单次心流持续时长为60-90分钟，这与人体的基础休息-活动周期高度吻合。</string>
     <string name="flow_info_strategy_title">建议策略</string>
@@ -245,6 +245,5 @@
     <!-- Font descriptions -->
     <string name="font_desc_inter">Android 系统默认无衬线字体。</string>
     <string name="font_desc_roboto">典雅衬线字体，结构严谨。</string>
-    <string name="font_desc_pingfang">中文无衬线，优雅美观。</string>
-    <string name="font_desc_sourcehan">等宽字体，字重丰富，代码感。</string>
+    <string name="font_desc_noto_sans_sc">Noto Sans SC 中文无衬线字体。</string>
 </resources>

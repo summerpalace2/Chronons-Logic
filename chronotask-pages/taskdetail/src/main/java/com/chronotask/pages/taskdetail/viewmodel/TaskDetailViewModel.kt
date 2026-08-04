@@ -3,8 +3,6 @@ package com.chronotask.pages.taskdetail.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.chronotask.components.common.base.BaseViewModel
 import com.chronotask.components.common.TimerManager
-import com.chronotask.components.common.QuickImportManager
-import com.chronotask.components.common.QuickImportTask
 import com.chronotask.components.common.DateUtils
 import com.chronotask.components.common.appIoScope
 import com.chronotask.components.common.appDataStore
@@ -28,7 +26,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Date
-import java.util.Locale
 
 /**
  * TaskDetailViewModel - 任务详情页状态管理
@@ -79,12 +76,6 @@ class TaskDetailViewModel(
     private val _comparisonData = MutableStateFlow(TaskComparisonData())
     val comparisonData: StateFlow<TaskComparisonData> = _comparisonData
 
-    /**
-     * 缓存一键导入任务列表（避免每次 loadComparisonData 都读 DataStore）
-     * 在 init 中通过 first() 预加载，后续直接用这个缓存判断
-     */
-    private var cachedQuickImportTasks: List<QuickImportTask> = emptyList()
-
     // ── 笔记历史 ──────────────────────────────────────────────
 
     /**
@@ -113,7 +104,10 @@ class TaskDetailViewModel(
         noteHistory,
         localeFlow
     ) { historyList, _ ->
-        val dateFormat = java.text.SimpleDateFormat(appApplication.getString(R.string.date_format_short), Locale.getDefault())
+        val dateFormat = java.text.SimpleDateFormat(
+            appApplication.getString(R.string.date_format_short),
+            LocaleManager.currentLocale.value
+        )
         val todayStart = DateUtils.getTodayStart()
         val yesterdayStart = todayStart - 24 * 60 * 60 * 1000L
         historyList.groupBy { entity ->
@@ -130,22 +124,17 @@ class TaskDetailViewModel(
 
     // ── 内部状态 ──────────────────────────────────────────────
 
-    private var currentRecordId: Long = 0L
-    val isToday = recordDate == DateUtils.getTodayStart()
-
-
     private var noteSaveJob: kotlinx.coroutines.Job? = null
     private var lastSavedNote: String = ""
+
+    /** 防止旧的异步记录查询覆盖停止计时后的乐观 UI。 */
+    private var todayRecordLoadVersion = 0
 
     companion object {
         private const val NOTE_SAVE_DELAY_MS = 800L
     }
 
     init {
-        // 预缓存一键导入列表（同步等待 DataStore 首次 emit，避免后续 loadComparisonData 异步竞争）
-        cachedQuickImportTasks = kotlinx.coroutines.runBlocking {
-            QuickImportManager.tasks.first()
-        }
         loadTaskInfo()
         loadTodayRecord()
         loadComparisonData()
@@ -157,7 +146,7 @@ class TaskDetailViewModel(
      * 加载任务基础信息（标题 + 标签名）
      */
     private fun loadTaskInfo() {
-        appIoScope.launch {
+        viewModelScope.launch {
             val taskEntity = TaskRepository.getById(taskId)
             _task.value = taskEntity
             if (taskEntity != null) {
@@ -171,11 +160,12 @@ class TaskDetailViewModel(
      * 加载今日计时记录
      */
     fun loadTodayRecord() {
-        appIoScope.launch {
+        val requestVersion = ++todayRecordLoadVersion
+        viewModelScope.launch {
             val record = TaskRecordRepository.getByTaskAndDate(taskId, recordDate)
+            if (requestVersion != todayRecordLoadVersion) return@launch
             _todayRecordSeconds.value = record?.durationSeconds ?: 0L
             _note.value = record?.note ?: ""
-            currentRecordId = record?.id ?: 0L
         }
     }
 
@@ -183,7 +173,7 @@ class TaskDetailViewModel(
      * 加载横向对比数据（本周/本月日均）
      */
     fun loadComparisonData() {
-        appIoScope.launch {
+        viewModelScope.launch {
             val cal = java.util.Calendar.getInstance()
             val todayMillis = System.currentTimeMillis()
             cal.timeInMillis = todayMillis
@@ -194,7 +184,7 @@ class TaskDetailViewModel(
             val todayStart = cal.timeInMillis
 
             // 横向对比：与当前任务标题相同（一键导入类同标题）的所有任务做聚合均值
-            val taskTitle = _task.value?.title
+            val taskTitle = _task.value?.title ?: TaskRepository.getById(taskId)?.title
             val idsToAggregate: List<Long> = if (taskTitle.isNullOrBlank()) {
                 listOf(taskId)
             } else {
@@ -231,18 +221,13 @@ class TaskDetailViewModel(
 
     fun stopTimer() {
         val info = TimerManager.stopSessionDetailed() ?: return
+        todayRecordLoadVersion++
         val totalElapsed = info.totalSeconds
-        val startDay = info.sessionStartDay
         // [修复] 保留已有计时 + 本次会话秒数（previous + 当前 session）
         val previousSeconds = _todayRecordSeconds.value
         val newTotal = previousSeconds + totalElapsed
         // 先同步更新 UI，防止停止瞬间回弹
         _todayRecordSeconds.value = newTotal
-        appIoScope.launch {
-            val endMs = startDay + totalElapsed * 1000L
-            TaskRecordRepository.saveTimerResultByDays(info.taskId, startDay, endMs)
-            TimerManager.resetTimer()
-        }
         loadComparisonData()
     }
 

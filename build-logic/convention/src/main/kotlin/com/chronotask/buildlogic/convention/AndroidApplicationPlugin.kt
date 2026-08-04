@@ -2,6 +2,7 @@ package com.chronotask.buildlogic.convention
 
 import com.chronotask.buildlogic.convention.config.androidCommonConvention
 import com.chronotask.buildlogic.convention.config.getBundle
+import com.chronotask.buildlogic.convention.config.getLib
 import com.chronotask.buildlogic.convention.config.getIntVersion
 import com.chronotask.buildlogic.convention.config.versionLibs
 import org.gradle.api.Plugin
@@ -39,6 +40,9 @@ class AndroidApplicationPlugin : Plugin<Project> {
             dependencies {
                 add("implementation", project(":chronotask-components:navigation:core"))
                 add("ksp", project(":chronotask-components:navigation:processor"))
+                val composeBom = platform(getLib("androidx-compose-bom"))
+                add("implementation", composeBom)
+                add("androidTestImplementation", composeBom)
                 add("implementation", getBundle("projectBaseCompose"))
             }
         }

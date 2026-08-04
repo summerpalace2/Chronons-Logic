@@ -11,7 +11,7 @@
     <string name="efficiency_trend">Efficiency Trend</string>
     <string name="rest_day_excluded">(Rest days excluded)</string>
     <string name="focus_count">Focus Count</string>
-    <string name="flow_condition">Single session ≥90min</string>
+    <string name="flow_condition">Single session &gt;90 min</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
@@ -32,7 +32,7 @@
     <string name="tag_distribution">Tag Distribution</string>
     <string name="time_distribution">%s Distribution</string>
     <string name="flow_info_title">Focus Info</string>
-    <string name="flow_info_text">Single session ≥90min counts as one focus</string>    <!-- Task Detail -->    <string name="task_detail_title">Task Detail</string>
+    <string name="flow_info_text">A single session over 90 minutes counts as one focus</string>    <!-- Task Detail -->    <string name="task_detail_title">Task Detail</string>
     <string name="task_title_label">Task Title</string>
     <string name="progress">Progress</string>
     <string name="recording">Recording</string>
@@ -65,10 +65,11 @@
     <string name="horizontal_comparison_toggle">Horizontal Comparison</string>
     <string name="workday_settings">Workday Settings</string>
     <string name="workday_default">Mon - Fri</string>
+    <string name="workday_picker_title">Select Workdays</string>
+    <string name="workday_picker_description">Selected days are marked as workdays; unselected days are marked as rest days.</string>
     <string name="system">System</string>
     <string name="language">Language</string>
     <string name="notifications">Notifications</string>
-    <string name="daily_reminder">Daily Reminder</string>
     <string name="about_app">About App</string>
     <string name="about_author">About Author</string>
     <string name="personal_info">Personal Info</string>
@@ -83,15 +84,9 @@
     <string name="font_size">Font Size</string>
     <string name="font_preview_title">Chronos Logic Time Management</string>
     <string name="font_preview_text">The quick brown fox jumps over the lazy dog.</string>
-    <string name="current_font_size">Current size: %dpx</string>
+    <string name="current_font_size">Current size: %dsp</string>
     <string name="font_small">Small</string>
-    <string name="font_large">Large</string>    <!-- Language Settings -->    <string name="language_settings">Language Settings</string>    <!-- Notification Settings -->    <string name="notification_settings">Notification Settings</string>
-    <string name="notification_reminder">Reminders</string>
-    <string name="task_complete_notify">Task Complete</string>
-    <string name="weekly_report">Weekly Report</string>
-    <string name="reminder_time">Reminder Time</string>
-    <string name="morning_reminder">Morning Reminder</string>
-    <string name="evening_reminder">Evening Summary</string>    <!-- About App -->    <string name="about_app_title">About App</string>
+    <string name="font_large">Large</string>    <!-- Language Settings -->    <string name="language_settings">Language Settings</string>    <!-- About App -->    <string name="about_app_title">About App</string>
     <string name="core_features">Core Features</string>
     <string name="rating">Rate Us</string>
     <string name="user_agreement">User Agreement</string>
@@ -114,8 +109,8 @@
     <string name="theme_desc_sunset">Twilight dawn · Warm &amp; gentle</string>
     <string name="theme_desc_obsidian">Obsidian gold · Noble &amp; refined</string>    <!-- Font descriptions -->    <string name="font_desc_inter">Android system default sans-serif font.</string>
     <string name="font_desc_roboto">Classic serif font, rigorous structure.</string>
-    <string name="font_desc_pingfang">Chinese sans-serif, elegant &amp; beautiful.</string>
-    <string name="font_desc_sourcehan">Monospace font, rich weights, coding feel.</string>    <!-- Missing shared keys -->    <string name="delete">Delete</string>
+    <string name="font_desc_noto_sans_sc">Noto Sans SC Chinese sans-serif font.</string>
+    <string name="delete">Delete</string>
     <string name="clear">Clear</string>
     <string name="edit">Edit</string>
     <string name="search">Search</string>
@@ -179,6 +174,10 @@
     <string name="app_description">Chronos Logic is a time management tool designed for deep workers. With calendar-based task views and immersive timer experiences, it helps you manage every day more efficiently.</string>
     <string name="about_author_bio">Indie developer and designer, passionate about building lifestyle-changing productivity tools.</string>
     <string name="contact_github">GitHub</string>
+    <string name="author_skill_android">Android developer</string>
+    <string name="author_skill_full_stack">Full-stack enthusiast</string>
+    <string name="author_skill_ai">AI beginner</string>
+    <string name="author_made_with">Made with ♥ in 2026</string>
     <string name="contact_twitter">Twitter / X</string>
     <string name="contact_portfolio">Portfolio</string>
     <string name="color_primary">Primary</string>
@@ -193,7 +192,7 @@
     <string name="collapse">Collapse</string>
     <string name="timer_toolbar">Timer</string>
     <string name="note_toolbar">Note</string>
-    <string name="flow_info_body">Focus count tracks deep work sessions of 90 minutes (1.5 hours) or more.</string>
+    <string name="flow_info_body">Only a single session over 90 minutes counts as one focus; shorter sessions are not combined.</string>
     <string name="flow_info_why_title">Why 90 minutes?</string>
     <string name="flow_info_why_body">Psychological research shows entering flow state typically requires a 15-20 minute warm-up. Optimal flow duration is 60-90 minutes, closely matching the human ultradian rhythm.</string>
     <string name="flow_info_strategy_title">Suggested Strategy</string>
@@ -211,8 +210,7 @@
     <string name="tag_management">Tag Management</string>
     <string name="font_name_inter">Inter / System Default</string>
     <string name="font_name_roboto">Roboto / Serif</string>
-    <string name="font_name_pingfang">PingFang / Sans-serif</string>
-    <string name="font_name_sourcehan">Source Han / Monospace</string>
+    <string name="font_name_noto_sans_sc">Noto Sans SC / Sans-serif</string>
     <string name="delete_tag_confirm">Delete tag "%s"?</string>
     <string name="add_note">Add Note</string>
     <string name="view_note">Read</string>

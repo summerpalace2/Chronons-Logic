@@ -26,7 +26,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -65,8 +64,19 @@ fun CalendarPickerDialog(
     onDismiss: () -> Unit
 ) {
     val todayStart = DateUtils.getTodayStart()
-    val monthYearFormat = SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "yMMM"), Locale.getDefault())
-    val dateFormat = SimpleDateFormat(android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), "yMMMd"), Locale.getDefault())
+    val currentLocale by LocaleManager.currentLocale.collectAsState()
+    val monthYearFormat = remember(currentLocale) {
+        SimpleDateFormat(
+            android.text.format.DateFormat.getBestDateTimePattern(currentLocale, "yMMM"),
+            currentLocale
+        )
+    }
+    val dateFormat = remember(currentLocale) {
+        SimpleDateFormat(
+            android.text.format.DateFormat.getBestDateTimePattern(currentLocale, "yMMMd"),
+            currentLocale
+        )
+    }
 
     var currentMonth by remember { mutableStateOf(Calendar.getInstance().apply { timeInMillis = initialDate }) }
     var selectedDate by remember { mutableStateOf(initialDate) }

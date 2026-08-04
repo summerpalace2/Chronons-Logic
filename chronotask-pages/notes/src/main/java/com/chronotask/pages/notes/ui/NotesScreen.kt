@@ -58,6 +58,7 @@ import com.chronotask.pages.notes.api.NotesReadArgument
 import com.chronotask.pages.notes.viewmodel.NotesViewModel
 import com.chronotask.components.ui.theme.LocaleManager
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -410,7 +411,13 @@ private fun NotesListItem(
     onEdit: () -> Unit
 ) {
     val timeStr = remember(entity.sessionStartTime) {
-        String.format("%02d:%02d", Date(entity.sessionStartTime).hours, Date(entity.sessionStartTime).minutes)
+        Calendar.getInstance().apply { timeInMillis = entity.sessionStartTime }.let { calendar ->
+            String.format(
+                "%02d:%02d",
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE)
+            )
+        }
     }
     val firstLine = entity.note.lineSequence().firstOrNull()?.take(10) ?: ""
 

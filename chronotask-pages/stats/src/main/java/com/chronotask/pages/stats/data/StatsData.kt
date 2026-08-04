@@ -33,7 +33,7 @@ fun StatsPeriod.label(): String = stringResource(id = labelRes)
  * @param periodAvgSeconds 日均秒数
  * @param prevPeriodTotalSeconds 上一周期总秒数（用于趋势对比）
  * @param periodWorkDays 工作天数（有记录的天数）
- * @param focusCount 专注次数（记录条数）
+ * @param focusCount 专注次数（单次有效计时严格超过 90 分钟的已完成会话数）
  * @param tagDistributions 整体标签时长分布
  * @param chartData 折线图数据
  * @param avgTrend 日均变化率（正数增长，负数下降）

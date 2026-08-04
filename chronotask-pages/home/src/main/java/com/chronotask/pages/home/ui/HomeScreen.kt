@@ -1,6 +1,5 @@
 ﻿package com.chronotask.pages.home.ui
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -161,13 +160,10 @@ private fun TaskListFab(viewModel: HomeViewModel, modifier: Modifier = Modifier)
  * @param viewModel 页面 ViewModel
  * @param selectedDate 当前选中的日期（由父组件传入，避免重复 collectAsState）
  */
-@SuppressLint("UnrememberedMutableState")
 @Composable
 private fun HomeTopSection(viewModel: HomeViewModel, selectedDate: Long) {
     val todayTotal by viewModel.combinedTotal.collectAsState()
     val isTodayRest by viewModel.isTodayRest.collectAsState()
-    val isToday = selectedDate == DateUtils.getTodayStart()
-
     val quickImportTasks by QuickImportManager.tasks.collectAsState(initial = emptyList())
     val quickImportEnabled by QuickImportManager.isEnabled.collectAsState(initial = false)
     val taskItems by viewModel.taskItems.collectAsState()

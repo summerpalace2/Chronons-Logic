@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.res.stringResource
+import com.chronotask.components.navigation.core.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -72,7 +74,7 @@ private fun AppNavEntryContent(navEntry: AppNavEntry<AppNavArgument>, argument: 
         Box(
             Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
-        ) { Text(text = "need login") }
+        ) { Text(text = stringResource(R.string.navigation_need_login)) }
         return
     }
     navEntry.Content(argument)
@@ -81,6 +83,6 @@ private fun AppNavEntryContent(navEntry: AppNavEntry<AppNavArgument>, argument: 
 @Composable
 private fun FallbackContent(argument: AppNavArgument) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(text = "page not found")
+        Text(text = stringResource(R.string.navigation_page_not_found))
     }
 }

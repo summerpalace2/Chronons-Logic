@@ -1,11 +1,13 @@
 ﻿package com.chronotask.pages.stats.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.chronotask.components.common.TimerManager
 import com.chronotask.components.common.appApplication
 import com.chronotask.components.ui.theme.LocaleManager
 import com.chronotask.components.common.appIoScope
 import com.chronotask.components.common.base.BaseViewModel
 import com.chronotask.components.database.AppDatabase
+import com.chronotask.components.database.repository.FocusSessionRepository
 import com.chronotask.components.ui.R
 import com.chronotask.pages.stats.data.StatsPeriod
 import com.chronotask.pages.stats.data.StatsState
@@ -81,6 +83,11 @@ class StatsViewModel : BaseViewModel() {
             // 读取数据库记录
             val records = recordDao.getRecordsByDateRange(start, end)
             val prevRecords = recordDao.getRecordsByDateRange(prevStart, start)
+            val focusCount = FocusSessionRepository.countQualifiedByDateRange(
+                startDate = start,
+                endDate = end,
+                thresholdSeconds = TimerManager.FOCUS_SESSION_THRESHOLD_SECONDS
+            )
 
             // 聚合计算
             val totalSeconds = records.sumOf { it.durationSeconds }
@@ -103,7 +110,7 @@ class StatsViewModel : BaseViewModel() {
                 periodAvgSeconds = avgSeconds,
                 prevPeriodTotalSeconds = prevTotalSeconds,
                 periodWorkDays = workDays,
-                focusCount = records.size,
+                focusCount = focusCount,
                 tagDistributions = tagDistributions,
                 chartData = chartData,
                 avgTrend = trend

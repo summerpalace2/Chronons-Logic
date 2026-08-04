@@ -48,7 +48,7 @@ fun ChronoTaskTheme(
     val colorScheme = if (darkTheme) theme.darkScheme else theme.lightScheme
 
     // 动态字体 + 字号缩放
-    val fontIndex by appDataStore.fontIndex.collectAsState(initial = 2)
+    val fontIndex by appDataStore.fontIndex.collectAsState(initial = AppFont.default.ordinal)
     val appFont = AppFont.entries.getOrElse(fontIndex) { AppFont.default }
     val fontSize by appDataStore.fontSize.collectAsState(initial = 16)
     val typography = buildTypography(appFont, fontSize.toFloat())

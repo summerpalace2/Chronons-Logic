@@ -16,7 +16,7 @@
     <string name="efficiency_trend">Efficiency Trend</string>
     <string name="rest_day_excluded">(Rest days excluded)</string>
     <string name="focus_count">Focus Count</string>
-    <string name="flow_condition">Single session ≥90min</string>
+    <string name="flow_condition">Single session &gt;90 min</string>
     <string name="week">Week</string>
     <string name="month">Month</string>
     <string name="year">Year</string>
@@ -34,7 +34,7 @@
     <string name="tag_distribution">Tag Distribution</string>
     <string name="time_distribution">%s Distribution</string>
     <string name="flow_info_title">Focus Info</string>
-    <string name="flow_info_text">Single session ≥90min counts as one focus</string>
+    <string name="flow_info_text">A single session over 90 minutes counts as one focus</string>
 
     <!-- Task Detail -->
     <string name="task_detail_title">Task Detail</string>
@@ -78,7 +78,6 @@
     <string name="system">System</string>
     <string name="language">Language</string>
     <string name="notifications">Notifications</string>
-    <string name="daily_reminder">Daily Reminder</string>
     <string name="about_app">About App</string>
     <string name="about_author">About Author</string>
     <string name="personal_info">Personal Info</string>
@@ -99,21 +98,22 @@
     <string name="font_size">Font Size</string>
     <string name="font_preview_title">Chronos Logic Time Management</string>
     <string name="font_preview_text">The quick brown fox jumps over the lazy dog.</string>
-    <string name="current_font_size">Current size: %dpx</string>
+    <string name="current_font_size">Current size: %dsp</string>
     <string name="font_small">Small</string>
     <string name="font_large">Large</string>
 
     <!-- Language Settings -->
     <string name="language_settings">Language Settings</string>
 
-    <!-- Notification Settings -->
-    <string name="notification_settings">Notification Settings</string>
-    <string name="notification_reminder">Reminders</string>
-    <string name="task_complete_notify">Task Complete</string>
-    <string name="weekly_report">Weekly Report</string>
-    <string name="reminder_time">Reminder Time</string>
-    <string name="morning_reminder">Morning Reminder</string>
-    <string name="evening_reminder">Evening Summary</string>
+    <!-- Foreground timer notification -->
+    <string name="notification_timer_channel">Active Timer</string>
+    <string name="notification_timer_channel_description">Shows the task timer currently in progress</string>
+    <string name="notification_timer_running">Timer running</string>
+    <string name="notification_timer_paused">Timer paused</string>
+    <string name="notification_timer_fallback_task">Focus task</string>
+    <string name="notification_timer_pause">Pause</string>
+    <string name="notification_timer_resume">Resume</string>
+    <string name="notification_timer_stop">Stop</string>
 
     <!-- About App -->
     <string name="about_app_title">About App</string>
@@ -216,7 +216,7 @@
     <string name="note_toolbar">Note</string>
 
     <!-- Stats - Flow info dialog -->
-    <string name="flow_info_body">Focus count tracks deep work sessions of 90 minutes (1.5 hours) or more.</string>
+    <string name="flow_info_body">Only a single session over 90 minutes counts as one focus; shorter sessions are not combined.</string>
     <string name="flow_info_why_title">Why 90 minutes?</string>
     <string name="flow_info_why_body">Psychological research shows entering flow state typically requires a 15-20 minute warm-up. Optimal flow duration is 60-90 minutes, closely matching the human ultradian rhythm.</string>
     <string name="flow_info_strategy_title">Suggested Strategy</string>
@@ -245,6 +245,5 @@
     <!-- Font descriptions -->
     <string name="font_desc_inter">Android system default sans-serif font.</string>
     <string name="font_desc_roboto">Classic serif font, rigorous structure.</string>
-    <string name="font_desc_pingfang">Chinese sans-serif, elegant &amp; beautiful.</string>
-    <string name="font_desc_sourcehan">Monospace font, rich weights, coding feel.</string>
+    <string name="font_desc_noto_sans_sc">Noto Sans SC Chinese sans-serif font.</string>
 </resources>

@@ -143,8 +143,7 @@ fun CreateScreen(
             initialHours = hours,
             initialMinutes = minutes,
             onConfirm = { h, m ->
-                viewModel.setHours(h)
-                viewModel.setMinutes(m)
+                viewModel.setTargetDuration(h, m)
                 showTimePicker = false
             },
             onDismiss = { showTimePicker = false }

@@ -13,7 +13,9 @@ fun Project.useCompose(includeBase: Boolean = path != ":chronotask-components:ui
         buildFeatures { compose = true }
     }
     dependencies {
-        add("implementation", platform(getLib("androidx-compose-bom")))
+        val composeBom = platform(getLib("androidx-compose-bom"))
+        add("implementation", composeBom)
+        add("androidTestImplementation", composeBom)
         add("implementation", getLib("androidx-compose-ui"))
         add("implementation", getLib("androidx-compose-ui-graphics"))
         add("implementation", getLib("androidx-compose-ui-tooling-preview"))
