@@ -32,8 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -66,7 +64,6 @@ import com.chronotask.components.ui.compose.clickableNoIndicator
  * - SettingsGroup       — 卡片容器
  * - SettingsDivider     — 行内分隔线
  * - ThemeOption         — 主题选择行（带选中圆点）
- * - NotificationToggle  — 通知开关行
  * - ContactItem         — 联系方式行（emoji + 标签 + 值）
  * - UserProfileCard     — 用户资料卡片（头像 + 编辑按钮 + 用户名）
  * - EditNameDialog      — 编辑用户名弹窗
@@ -146,16 +143,7 @@ fun SettingsGroup(content: @Composable () -> Unit) {
     }
 }
 
-/**
- * 设置行
- *
- * 图标 + 标题 + 可选副标题 + 右侧箭头的可点击行。
- *
- * @param icon 左侧图标
- * @param title 主标题
- * @param subtitle 可选副标题（如当前选中值）
- * @param onClick 点击回调
- */
+/** 设置分组内的行间分隔线。 */
 @Composable
 fun SettingsDivider() {
     HorizontalDivider(
@@ -224,44 +212,6 @@ fun ThemeOption(
                 )
             }
         }
-    }
-}
-
-/**
- * 通知开关行
- *
- * 标签文字 + 右侧 Switch 开关。
- *
- * @param label 开关描述文字
- * @param checked 当前开关状态
- * @param onCheckedChange 状态变更回调
- */
-@Composable
-fun NotificationToggle(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary
-            )
-        )
     }
 }
 
@@ -431,51 +381,6 @@ internal fun EditNameDialog(
 }
 
 /**
- * SettingsSwitchItem - 设置页开关行
- *
- * 文本 + Switch 的列表行，支持启用/禁用状态和回调。
- *
- * @param label 行文本
- * @param checked 开关当前状态
- * @param onCheckedChange 开关状态变化回调
- * @param enabled 是否可交互（默认 true）
- */
-@Composable
-fun SettingsSwitchItem(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean = true
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            enabled = enabled,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary
-            )
-        )
-    }
-
-}
-
-
-
-
-/**
  * FeatureInfoDialog - 通用功能说明浮窗（标题 + 说明文本）\n * 标题由 title 参数提供，正文由 message 参数提供
  */
 @Composable
@@ -554,20 +459,20 @@ fun WorkdayPickerDialog(
 
     // 星期列表：索引0=周日对应bit0，...，索引6=周六对应bit6
     val weekDays = listOf(
-        "周一" to 1,
-        "周二" to 2,
-        "周三" to 3,
-        "周四" to 4,
-        "周五" to 5,
-        "周六" to 6,
-        "周日" to 0
+        R.string.weekday_mon to 1,
+        R.string.weekday_tue to 2,
+        R.string.weekday_wed to 3,
+        R.string.weekday_thu to 4,
+        R.string.weekday_fri to 5,
+        R.string.weekday_sat to 6,
+        R.string.weekday_sun to 0
     )
 
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = "选择工作日",
+                text = stringResource(R.string.workday_picker_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -575,7 +480,7 @@ fun WorkdayPickerDialog(
         text = {
             Column {
                 Text(
-                    text = "选中的日期会被标记为工作日，非工作日会被标记为休息日",
+                    text = stringResource(R.string.workday_picker_description),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -587,7 +492,7 @@ fun WorkdayPickerDialog(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.height(80.dp)
                 ) {
-                    items(weekDays) { (name, bitIndex) ->
+                    items(weekDays) { (nameResId, bitIndex) ->
                         val isSelected = (tempMask and (1 shl bitIndex)) != 0
                         Surface(
                             shape = RoundedCornerShape(50),
@@ -608,7 +513,7 @@ fun WorkdayPickerDialog(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = name,
+                                    text = stringResource(nameResId),
                                     style = MaterialTheme.typography.labelMedium,
                                     maxLines = 1,
                                     color = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant

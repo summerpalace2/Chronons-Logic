@@ -104,6 +104,18 @@ class CreateViewModel : BaseViewModel() {
     }
 
     /**
+     * 一次性更新目标时长，避免确认回调连续修改两个 StateFlow 时产生中间状态。
+     *
+     * @param hours 目标小时数，自动约束在 [0, 23]
+     * @param minutes 目标分钟数，自动约束在 [0, 59]
+     */
+    fun setTargetDuration(hours: Int, minutes: Int) {
+        _hours.value = hours.coerceIn(0, 23)
+        _minutes.value = minutes.coerceIn(0, 59)
+        _isUnlimited.value = false
+    }
+
+    /**
      * 切换"无限时"模式
      */
     fun toggleUnlimited() { _isUnlimited.value = !_isUnlimited.value }
@@ -190,14 +202,15 @@ class CreateViewModel : BaseViewModel() {
      * 使用 appIoScope 保活，即使页面退出也能完成写入
      */
     private fun saveNormalTask(title: String, targetMinutes: Int?) {
+        val selectedTagId = _selectedTagId.value
         appIoScope.launch {
             val existingId = editingTaskId
             if (existingId != null) {
+                val existingTask = taskDao.getTaskById(existingId) ?: return@launch
                 taskDao.updateTask(
-                    TaskEntity(
-                        id = existingId,
+                    existingTask.copy(
                         title = title,
-                        tagId = _selectedTagId.value,
+                        tagId = selectedTagId,
                         targetDurationMinutes = targetMinutes
                     )
                 )
@@ -205,7 +218,7 @@ class CreateViewModel : BaseViewModel() {
                 taskDao.insertTask(
                     TaskEntity(
                         title = title,
-                        tagId = _selectedTagId.value,
+                        tagId = selectedTagId,
                         targetDurationMinutes = targetMinutes,
                         scheduledDate = DateUtils.getTodayStart()
                     )

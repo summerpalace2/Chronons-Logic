@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 /**
  * NotesViewModel - 笔记模块状态管理
@@ -85,7 +84,10 @@ class NotesViewModel : BaseViewModel() {
         }
 
         // 第二步：按日期分组（locale 变化时重新执行）
-        val dateFormat = SimpleDateFormat(appApplication.getString(R.string.date_format_short), Locale.getDefault())
+        val dateFormat = SimpleDateFormat(
+            appApplication.getString(R.string.date_format_short),
+            LocaleManager.currentLocale.value
+        )
         val todayStart = DateUtils.getTodayStart()
         val yesterdayStart = todayStart - 24 * 60 * 60 * 1000L
         filtered.groupBy { entity ->
@@ -164,7 +166,7 @@ class NotesViewModel : BaseViewModel() {
         appIoScope.launch {
             NoteHistoryRepository.insertNote(
                 NoteHistoryEntity(
-                    taskId = 0L,
+                    taskId = -1L,
                     date = DateUtils.getTodayStart(),
                     sessionStartTime = System.currentTimeMillis(),
                     durationSeconds = 0,

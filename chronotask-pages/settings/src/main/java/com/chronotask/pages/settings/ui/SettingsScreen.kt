@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.NightsStay
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.AccountCircle
@@ -59,7 +58,6 @@ import com.chronotask.pages.settings.api.AboutAppArgument
 import com.chronotask.pages.settings.api.AboutAuthorArgument
 import com.chronotask.pages.settings.api.FontArgument
 import com.chronotask.pages.settings.api.LanguageArgument
-import com.chronotask.pages.settings.api.NotificationsArgument
 import com.chronotask.pages.settings.api.QuickImportArgument
 import com.chronotask.pages.settings.api.SettingsArgument
 import com.chronotask.pages.settings.api.ThemeArgument
@@ -485,15 +483,6 @@ private fun SystemSection() {
             title = stringResource(R.string.language),
             subtitle = currentLang.displayName,
             onClick = { LanguageArgument.navigate() })
-        HorizontalDivider(
-            modifier = Modifier.padding(start = 56.dp),
-            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
-        )
-        SettingsRow(
-            icon = Icons.Default.Notifications,
-            title = stringResource(R.string.notifications),
-            subtitle = stringResource(R.string.daily_reminder),
-            onClick = { NotificationsArgument.navigate() })
         HorizontalDivider(
             modifier = Modifier.padding(start = 56.dp),
             color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)

@@ -91,7 +91,7 @@ class HomeViewModel : BaseViewModel() {
     /** 标签集合流：从 DAO 拉取后转成 id→TagEntity 的 Map，仅加载一次 */
     private val tagsMap: StateFlow<Map<Long, TagEntity>> =
         tagDao.getAllTags()
-            .combine(MutableStateFlow(Unit)) { tags, _ -> tags.associateBy { it.id } }
+            .map { tags -> tags.associateBy { it.id } }
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyMap())
 
     /**
@@ -153,22 +153,16 @@ class HomeViewModel : BaseViewModel() {
         viewModelScope.launch {
             _selectedDate.collectLatest { loadImportedDays() }
         }
-        // 初始刷新
-        loadImportedDays()
-
         // 初始同步 dayStartOffset 缓存
-        appIoScope.launch { appDataStore.dayStartOffsetMinutes.collect { cachedDayStartOffset = it } }
+        viewModelScope.launch { appDataStore.dayStartOffsetMinutes.collect { cachedDayStartOffset = it } }
 
-        // 跨天自动停止：TimerManager 返回 StopInfo，ViewModel 落库 + 通知 UI
-        TimerManager.onDayRollover = { taskId, startDay, stopWallMs, total ->
+        // 跨天自动停止：TimerManager 统一落库，ViewModel 只负责刷新当前页面状态。
+        TimerManager.onDayRollover = { taskId, _, _, total ->
             val newTotal = recordedTotal.value + total
             val newRecords = _dateRecords.value.toMutableMap()
             newRecords[taskId] = (newRecords[taskId] ?: 0L) + total
             recordedTotal.value = newTotal
             _dateRecords.value = newRecords
-            appIoScope.launch {
-                TaskRecordRepository.saveTimerResultByDays(taskId, startDay, stopWallMs)
-            }
         }
     }
 
@@ -246,8 +240,7 @@ class HomeViewModel : BaseViewModel() {
     /** 当前 dayStartOffset 缓存（UI 启动时同步刷新一次） */
     private var cachedDayStartOffset: Int = 0
 
-    /** 启动指定任务的计时器（休息日不启动） */
-    /** 计算当前允许计时的日槽零时戳（给 UI 判断按钮是否可用） */
+    /** 计算当前允许计时的日槽零时戳（给 UI 判断按钮是否可用）。 */
     fun getActiveDay(): Long = DateUtils.getActiveDayMidnight(System.currentTimeMillis(), cachedDayStartOffset)
 
     fun startTask(taskId: Long) {
@@ -260,7 +253,7 @@ class HomeViewModel : BaseViewModel() {
     /**
      * 停止计时：
      *   ① 同步更新 recordedTotal 与 _dateRecords（立即反映在 UI）
-     *   ② 异步落库到 task_records（appIoScope 保活）
+     *   ② 由 Application 注册的 TimerManager.onSessionStopped 统一落库
      */
     fun stopTask() {
         val info = TimerManager.stopSessionDetailed() ?: return
@@ -273,15 +266,10 @@ class HomeViewModel : BaseViewModel() {
         recordedTotal.value = newTotal
         _dateRecords.value = newRecords
 
-        // 跨天处理：按自然日拆分，把秒数分配给每一天
-        appIoScope.launch {
-            val endMs = info.sessionStartDay + info.totalSeconds * 1000L
-            TaskRecordRepository.saveTimerResultByDays(info.taskId, info.sessionStartDay, endMs)
-            TimerManager.resetTimer()
-        }
     }
 
-fun toggleTaskCompletion(taskId: Long) {
+    /** 切换指定任务的完成状态。 */
+    fun toggleTaskCompletion(taskId: Long) {
         appIoScope.launch {
             val task = TaskRepository.getById(taskId) ?: return@launch
             TaskRepository.update(task.copy(isCompleted = !task.isCompleted))
@@ -337,8 +325,8 @@ fun toggleTaskCompletion(taskId: Long) {
 
     // 公开方法 — 日期导航
 
-    /** 按周切换（weeks > 0 向后，< 0 向前） */
-        private fun loadImportedDays() {
+    /** 加载最近 30 天内已导入快速任务的日期。 */
+    private fun loadImportedDays() {
         appIoScope.launch {
             try {
                 val enabled = com.chronotask.components.common.QuickImportManager.isEnabled.first()
@@ -352,7 +340,7 @@ fun toggleTaskCompletion(taskId: Long) {
                 val offsetMinutes = appDataStore.dayStartOffsetMinutes.first()
                 val activeNow = DateUtils.getActiveDayMidnight(now, offsetMinutes)
                 val start = DateUtils.getActiveDayMidnight(now - 30L * 24 * 60 * 60 * 1000, offsetMinutes)
-                val end = activeNow
+                val end = DateUtils.getNextDayStart(activeNow)
                 val records = try { db.taskRecordDao().getRecordsByDateRange(start, end) } catch (_: Exception) { emptyList() }
                 val matched: Set<Long> = records.filter { it.taskId in taskIds }.map { DateUtils.getDateStart(it.date) }.toSet()
                 synchronized(importStatusWrite) { _dayImportStatus.value = matched }

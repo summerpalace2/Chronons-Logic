@@ -158,7 +158,7 @@ fun QuickImportTaskItem(
                             .size(40.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .background(MaterialTheme.colorScheme.primaryContainer)
-                            .clickableNoIndicator { /* 编辑功能预留 */ },
+                            .clickableNoIndicator { onEdit(index) },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(

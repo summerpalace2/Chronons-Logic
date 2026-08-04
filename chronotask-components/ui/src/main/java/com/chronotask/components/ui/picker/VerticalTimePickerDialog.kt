@@ -51,19 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.chronotask.components.ui.R
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-/**
- * VerticalTimePickerDialog — 垂直滚轮时间选择弹窗
- *
- * @param initialHours   初始小时值 (0-23)，由外部传入上次设置值
- * @param initialMinutes 初始分钟值 (0-59)
- * @param onConfirm      确认回调，参数为 (选择的小时, 选择的分钟)
- * @param onDismiss      取消/点击外部区域回调
- */
 /**
  * VerticalTimePickerDialog — 公共垂直滚轮时间选择弹窗
  *
@@ -85,8 +78,13 @@ fun VerticalTimePickerDialog(
     onDismiss: () -> Unit
 ) {
     //当前选中的小时/分钟 — 由各自的 VerticalWheel 内部状态同步上来
-    var selectedHours by remember { mutableIntStateOf(initialHours) }
-    var selectedMinutes by remember { mutableIntStateOf(initialMinutes) }
+    var selectedHours by remember(initialHours) { mutableIntStateOf(initialHours) }
+    var selectedMinutes by remember(initialMinutes) { mutableIntStateOf(initialMinutes) }
+
+    LaunchedEffect(initialHours, initialMinutes) {
+        selectedHours = initialHours
+        selectedMinutes = initialMinutes
+    }
 
     Dialog(onDismissRequest = onDismiss) {
         Surface(
@@ -208,7 +206,7 @@ private fun VerticalWheel(
 
     //flingJob: 跟踪正在运行的 animateTo 协程引用。
     //新手势开始时取消旧动画，确保没有并发动画冲突。
-    var flingJob: kotlinx.coroutines.Job? = null
+    var flingJob by remember { mutableStateOf<Job?>(null) }
 
     //textPaint: Canvas 绘制文字用的 Paint，remember 避免每帧重建
     val textPaint = remember { Paint().apply { isAntiAlias = true; textAlign = android.graphics.Paint.Align.CENTER } }
@@ -238,6 +236,8 @@ private fun VerticalWheel(
 
                     //取消正在运行的 fling 动画，确保新手势立即响应
                     flingJob?.cancel()
+                    tracker.resetTracking()
+                    tracker.addPosition(down.uptimeMillis, down.position)
                     var isTap = true                  // 初始假定为点按，后续根据拖动距离修正
                     var lastY = down.position.y       // 上一次手指 Y 坐标，用于计算帧间位移 dy
                     var lastScrollIdx = (currentOffset / itemHeightPx).roundToInt()  // 上一次滚动的 index，用于震动反馈
@@ -342,13 +342,22 @@ private fun VerticalWheel(
                             //先同步 animatable 到当前 offset，确保动画从正确位置开始
                             animatable.snapTo(currentOffset)
 
+                            var prevAnimIdx = (currentOffset / itemHeightPx).roundToInt()
+
                             animatable.animateTo(
                                 targetValue = targetOffset,
                                 animationSpec = tween(
                                     durationMillis = duration,
                                     easing = LinearOutSlowInEasing
                                 )
-                            ) { currentOffset = value }
+                            ) { currentOffset = value
+                                val currentIdx = (currentOffset / itemHeightPx).roundToInt()
+                                if (currentIdx != prevAnimIdx) {
+                                    prevAnimIdx = currentIdx
+                                    lastScrollIdx = currentIdx
+                                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                }
+                            }
 
                             currentOffset = targetOffset
                             isFlinging = false

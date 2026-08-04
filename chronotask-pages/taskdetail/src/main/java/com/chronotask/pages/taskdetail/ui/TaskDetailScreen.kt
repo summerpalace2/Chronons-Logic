@@ -58,7 +58,9 @@ import com.chronotask.pages.taskdetail.viewmodel.TaskDetailViewModel
  */
 @Composable
 fun TaskDetailScreen(taskId: Long, date: Long = 0) {
-    val viewModel: TaskDetailViewModel = viewModel { TaskDetailViewModel(taskId, date) }
+    // 导航参数未传日期时统一落到今天，不能把 0 直接传给 ViewModel 查询数据库。
+    val effectiveDate = if (date > 0) date else DateUtils.getTodayStart()
+    val viewModel: TaskDetailViewModel = viewModel { TaskDetailViewModel(taskId, effectiveDate) }
 
     // ── ViewModel 状态收集 ─────────────────────────────────
     val task by viewModel.task.collectAsState()
@@ -70,7 +72,6 @@ fun TaskDetailScreen(taskId: Long, date: Long = 0) {
     val comparisonData by viewModel.comparisonData.collectAsState()
 
     // ── 派生状态 ──────────────────────────────────────────
-    val effectiveDate = if (date > 0) date else DateUtils.getTodayStart()
     val totalSeconds = todayRecordSeconds + if (isRunning) elapsedSeconds else 0L
     val targetMinutes = task?.targetDurationMinutes
 

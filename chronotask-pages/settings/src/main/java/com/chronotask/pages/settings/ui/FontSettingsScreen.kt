@@ -51,7 +51,7 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun FontSettingsScreen() {
-    val savedFontIndex by appDataStore.fontIndex.collectAsState(initial = 2)
+    val savedFontIndex by appDataStore.fontIndex.collectAsState(initial = AppFont.default.ordinal)
     var selectedFont by remember(savedFontIndex) { mutableIntStateOf(savedFontIndex) }
     val savedFontSize by appDataStore.fontSize.collectAsState(initial = 16)
     var fontSize by remember(savedFontSize) { mutableFloatStateOf(savedFontSize.toFloat()) }
@@ -149,7 +149,11 @@ fun FontSettingsScreen() {
                         value = fontSize,
                         onValueChange = { newSize ->
                             fontSize = newSize
-                            scope.launch { appDataStore.setFontSize(newSize.toInt().coerceIn(12, 24)) }
+                        },
+                        onValueChangeFinished = {
+                            scope.launch {
+                                appDataStore.setFontSize(fontSize.toInt().coerceIn(12, 24))
+                            }
                         },
                         valueRange = 12f..24f,
                         steps = 0,
@@ -172,7 +176,7 @@ fun FontSettingsScreen() {
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                text = "The quick brown fox jumps over the lazy dog.",
+                                text = stringResource(R.string.font_preview_text),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

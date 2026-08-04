@@ -7,11 +7,13 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.chronotask.components.database.dao.DailyRestDao
+import com.chronotask.components.database.dao.FocusSessionDao
 import com.chronotask.components.database.dao.NoteHistoryDao
 import com.chronotask.components.database.dao.TagDao
 import com.chronotask.components.database.dao.TaskDao
 import com.chronotask.components.database.dao.TaskRecordDao
 import com.chronotask.components.database.entity.DailyRestEntity
+import com.chronotask.components.database.entity.FocusSessionEntity
 import com.chronotask.components.database.entity.NoteHistoryEntity
 import com.chronotask.components.database.entity.TagEntity
 import com.chronotask.components.database.entity.TaskEntity
@@ -21,7 +23,7 @@ import com.chronotask.components.database.entity.TaskRecordEntity
  * AppDatabase - 应用数据库主类
  *
  * 核心职责：作为 Room 数据库的统一入口，管理所有实体、DAO 以及版本迁移。
- * 当前版本为 6，包含 5 张表：tasks、task_records、tags、daily_rest、note_history。
+ * 当前版本为 7，包含 6 张表：tasks、task_records、tags、daily_rest、note_history、focus_sessions。
  * 使用单例模式通过 [getDatabase] 获取数据库实例。
  */
 @Database(
@@ -30,9 +32,10 @@ import com.chronotask.components.database.entity.TaskRecordEntity
         TaskRecordEntity::class,
         TagEntity::class,
         DailyRestEntity::class,
-        NoteHistoryEntity::class
+        NoteHistoryEntity::class,
+        FocusSessionEntity::class
     ],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -41,6 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tagDao(): TagDao
     abstract fun dailyRestDao(): DailyRestDao
     abstract fun noteHistoryDao(): NoteHistoryDao
+    abstract fun focusSessionDao(): FocusSessionDao
 
     companion object {
         @Volatile
@@ -131,10 +135,35 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
+         * MIGRATION_6_7 - 新增已完成专注会话表。
+         *
+         * 旧版只有按天汇总数据，无法可靠恢复历史会话边界，因此不对旧数据做猜测性回填。
+         */
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS focus_sessions (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                        "taskId INTEGER NOT NULL," +
+                        "date INTEGER NOT NULL," +
+                        "sessionStartTime INTEGER NOT NULL," +
+                        "sessionEndTime INTEGER NOT NULL," +
+                        "durationSeconds INTEGER NOT NULL)"
+                )
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_focus_sessions_date ON focus_sessions(date)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_focus_sessions_taskId ON focus_sessions(taskId)")
+                db.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS index_focus_sessions_taskId_sessionStartTime_sessionEndTime " +
+                        "ON focus_sessions(taskId, sessionStartTime, sessionEndTime)"
+                )
+            }
+        }
+
+        /**
          * 获取数据库单例实例
          *
          * 使用双重检查锁模式保证全局唯一实例，并通过 Room 构建器注册所有迁移。
-         * 迁移范围覆盖版本 1→2、2→3、3→4、4→5、5→6。
+         * 迁移范围覆盖版本 1→2、2→3、3→4、4→5、5→6、6→7。
          */
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -143,7 +172,14 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "chronotask_database"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(
+                        MIGRATION_1_2,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4,
+                        MIGRATION_4_5,
+                        MIGRATION_5_6,
+                        MIGRATION_6_7
+                    )
                     .build()
                 INSTANCE = instance
                 instance

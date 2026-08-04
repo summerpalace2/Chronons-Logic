@@ -64,7 +64,7 @@ object appDataStore {
     // ─── 字体 ───
     private val FONT_INDEX = intPreferencesKey("font_index")
     val fontIndex: Flow<Int> =
-        dataStore().data.map { it[FONT_INDEX] ?: 2 }.distinctUntilChanged()  // 默认苹方
+        dataStore().data.map { it[FONT_INDEX] ?: 2 }.distinctUntilChanged()  // 默认 Noto Sans SC
 
     suspend fun setFontIndex(index: Int) {
         dataStore().edit { it[FONT_INDEX] = index }
@@ -72,7 +72,7 @@ object appDataStore {
 
 
 
-    // ─── 字号（像素） ───
+    // ─── 字号（sp） ───
     private val FONT_SIZE = intPreferencesKey("font_size")
     val fontSize: Flow<Int> =
         dataStore().data.map { it[FONT_SIZE] ?: 16 }.distinctUntilChanged()  // 默认 16sp
@@ -152,18 +152,6 @@ object appDataStore {
     suspend fun setDayStartOffsetMinutes(minutes: Int) {
         dataStore().edit { it[DAY_START_OFFSET_MINUTES] = minutes.coerceIn(0, 1439) }
     }
-
-    // ─── 一天的起始偏移（小时）───
-    // 0 = 默认午夜；2 = 凌晨 2 点算新的一天开始。用于跨天计时的自动截断。
-    private val DAY_START_OFFSET_HOURS = intPreferencesKey("day_start_offset_hours")
-    val dayStartOffsetHours: Flow<Int> =
-        dataStore().data.map { it[DAY_START_OFFSET_HOURS] ?: 0 }.distinctUntilChanged()
-
-    suspend fun setDayStartOffsetHours(hours: Int) {
-        dataStore().edit { it[DAY_START_OFFSET_HOURS] = hours.coerceIn(0, 12) }
-    }
-
-
 
     // ─── 首次使用标记 ───
     private val IS_FIRST_USE = booleanPreferencesKey("is_first_use")

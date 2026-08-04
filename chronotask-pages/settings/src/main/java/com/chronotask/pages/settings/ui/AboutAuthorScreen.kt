@@ -129,7 +129,11 @@ fun AboutAuthorScreen() {
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                listOf("主Android开发", "略懂一点前后端开发", "AI入门小白一枚").forEach { tag ->
+                listOf(
+                    stringResource(R.string.author_skill_android),
+                    stringResource(R.string.author_skill_full_stack),
+                    stringResource(R.string.author_skill_ai)
+                ).forEach { tag ->
                     SuggestionChip(
                         onClick = { },
                         label = {
@@ -162,7 +166,7 @@ fun AboutAuthorScreen() {
                 Column {
                     ContactRow(
                         icon = Icons.Default.Code,
-                        label = "GitHub",
+                        label = stringResource(R.string.contact_github),
                         value = "github.com/summerpalace2",
                         onClick = {
                             val intent = Intent(
@@ -178,7 +182,7 @@ fun AboutAuthorScreen() {
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Made with \u2764 in 2026",
+                text = stringResource(R.string.author_made_with),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
