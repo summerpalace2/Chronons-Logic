@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.chronotask.components.common.AndroidTimerClock
+import com.chronotask.components.common.SharedPreferencesTimerSessionStore
 import com.chronotask.components.common.TimerManager
 import com.chronotask.components.common.appIoScope
 import com.chronotask.components.common.setApplication
@@ -48,6 +50,10 @@ class ChronoTaskApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         setApplication(this)
+        TimerManager.configureDependencies(
+            sessionStore = SharedPreferencesTimerSessionStore(this),
+            clock = AndroidTimerClock
+        )
         ensureCollectorsInitialized()
         LocaleManager.applyLocale(LocaleManager.getSavedLocale())
 
@@ -81,14 +87,16 @@ class ChronoTaskApplication : Application() {
                     TaskRecordRepository.saveTimerResultByDays(
                         taskId = info.taskId,
                         startMs = info.sessionStartWallTime,
-                        endMs = info.stopWallMs
+                        endMs = info.stopWallMs,
+                        dayStartOffsetMinutes = info.dayStartOffsetMinutes
                     )
                 } else {
                     info.activeSegments.forEach { segment ->
                         TaskRecordRepository.saveTimerResultByDays(
                             taskId = info.taskId,
                             startMs = segment.startWallMs,
-                            endMs = segment.endWallMs
+                            endMs = segment.endWallMs,
+                            dayStartOffsetMinutes = info.dayStartOffsetMinutes
                         )
                     }
                 }

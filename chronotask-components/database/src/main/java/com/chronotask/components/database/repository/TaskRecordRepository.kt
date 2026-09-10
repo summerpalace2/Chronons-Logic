@@ -155,9 +155,18 @@ object TaskRecordRepository {
     /**
      * 按天切分并保存计时结果，独立原子累加。
      */
-    suspend fun saveTimerResultByDays(taskId: Long, startMs: Long, endMs: Long) {
+    suspend fun saveTimerResultByDays(
+        taskId: Long,
+        startMs: Long,
+        endMs: Long,
+        dayStartOffsetMinutes: Int = 0
+    ) {
         if (endMs <= startMs) return
-        val splits = com.chronotask.components.common.DateUtils.splitByDay(startMs, endMs)
+        val splits = com.chronotask.components.common.DateUtils.splitByBusinessDay(
+            startMs,
+            endMs,
+            dayStartOffsetMinutes
+        )
         for ((dayStart, seconds) in splits) {
             dao.upsertDuration(taskId, dayStart, seconds)
         }
