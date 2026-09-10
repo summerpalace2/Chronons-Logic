@@ -18,12 +18,13 @@ import com.chronotask.components.database.entity.NoteHistoryEntity
 import com.chronotask.components.database.entity.TagEntity
 import com.chronotask.components.database.entity.TaskEntity
 import com.chronotask.components.database.entity.TaskRecordEntity
+import java.util.Calendar
 
 /**
  * AppDatabase - 应用数据库主类
  *
  * 核心职责：作为 Room 数据库的统一入口，管理所有实体、DAO 以及版本迁移。
- * 当前版本为 7，包含 6 张表：tasks、task_records、tags、daily_rest、note_history、focus_sessions。
+ * 当前版本为 10，包含 6 张表：tasks、task_records、tags、daily_rest、note_history、focus_sessions。
  * 使用单例模式通过 [getDatabase] 获取数据库实例。
  */
 @Database(
@@ -35,8 +36,8 @@ import com.chronotask.components.database.entity.TaskRecordEntity
         NoteHistoryEntity::class,
         FocusSessionEntity::class
     ],
-    version = 7,
-    exportSchema = false
+    version = 10,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
@@ -139,7 +140,7 @@ abstract class AppDatabase : RoomDatabase() {
          *
          * 旧版只有按天汇总数据，无法可靠恢复历史会话边界，因此不对旧数据做猜测性回填。
          */
-        private val MIGRATION_6_7 = object : Migration(6, 7) {
+        internal val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL(
                     "CREATE TABLE IF NOT EXISTS focus_sessions (" +
@@ -160,10 +161,73 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         /**
+         * MIGRATION_7_8 - 为统计范围查询新增 date 索引。
+         */
+        internal val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_task_records_date ON task_records(date)")
+            }
+        }
+
+        /**
+         * MIGRATION_8_9 - 统一历史计时记录的业务日期键。
+         *
+         * 旧版在用户设置非零日界时，把 task_records 和 focus_sessions 的 date
+         * 写成了日界时刻（例如 01:00）；新版约定始终写所属业务日的自然零点。
+         * 表结构不变，此迁移只修复已有数据的键值。
+         */
+        internal val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                normalizeDateColumn(db, "task_records")
+                normalizeDateColumn(db, "focus_sessions")
+            }
+        }
+
+        /**
+         * MIGRATION_9_10 - 为快速导入新增幂等键和唯一索引。
+         *
+         * NULL 保留给普通任务；SQLite 唯一索引允许多个 NULL，因此不会改变用户
+         * 创建同名普通任务的行为。
+         */
+        internal val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE tasks ADD COLUMN quickImportKey TEXT")
+                db.execSQL(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS index_tasks_scheduledDate_quickImportKey " +
+                        "ON tasks(scheduledDate, quickImportKey)"
+                )
+            }
+        }
+
+        private fun normalizeDateColumn(db: SupportSQLiteDatabase, tableName: String) {
+            db.query("SELECT id, date FROM $tableName").use { cursor ->
+                val idIndex = cursor.getColumnIndexOrThrow("id")
+                val dateIndex = cursor.getColumnIndexOrThrow("date")
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(idIndex)
+                    val storedDate = cursor.getLong(dateIndex)
+                    val normalizedDate = Calendar.getInstance().apply {
+                        timeInMillis = storedDate
+                        set(Calendar.HOUR_OF_DAY, 0)
+                        set(Calendar.MINUTE, 0)
+                        set(Calendar.SECOND, 0)
+                        set(Calendar.MILLISECOND, 0)
+                    }.timeInMillis
+                    if (storedDate != normalizedDate) {
+                        db.execSQL(
+                            "UPDATE $tableName SET date = ? WHERE id = ?",
+                            arrayOf(normalizedDate, id)
+                        )
+                    }
+                }
+            }
+        }
+
+        /**
          * 获取数据库单例实例
          *
          * 使用双重检查锁模式保证全局唯一实例，并通过 Room 构建器注册所有迁移。
-         * 迁移范围覆盖版本 1→2、2→3、3→4、4→5、5→6、6→7。
+         * 迁移范围覆盖版本 1→2、2→3、3→4、4→5、5→6、6→7、7→8、8→9、9→10。
          */
         fun getDatabase(context: Context): AppDatabase {
             return INSTANCE ?: synchronized(this) {
@@ -178,7 +242,10 @@ abstract class AppDatabase : RoomDatabase() {
                         MIGRATION_3_4,
                         MIGRATION_4_5,
                         MIGRATION_5_6,
-                        MIGRATION_6_7
+                        MIGRATION_6_7,
+                        MIGRATION_7_8,
+                        MIGRATION_8_9,
+                        MIGRATION_9_10
                     )
                     .build()
                 INSTANCE = instance

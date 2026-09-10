@@ -265,11 +265,12 @@ private fun VerticalWheel(
                         //更新偏移量：手指上滑 → currentOffset 增大 → 上方条目移入中心
                         currentOffset += dy
 
-                        //滚动震动反馈：滚过每一格时触发轻微震动
+                        //滚动震动反馈与实时同步：滚过每一格时触发轻微震动并同步选中值
                         val currentIdx = (currentOffset / itemHeightPx).roundToInt()
                         if (currentIdx != lastScrollIdx) {
                             lastScrollIdx = currentIdx
                             view.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                            onValueSelected(floorMod(currentIdx, itemCount))
                         }
 
                         //记录位置历史，松手时用于计算速度
@@ -303,6 +304,7 @@ private fun VerticalWheel(
 
                             val targetOffset = targetIdx * itemHeightPx
                             isFlinging = false
+                            onValueSelected(floorMod(targetIdx, itemCount))
 
                             //先同步 animatable 到当前 offset，确保动画从正确位置开始
                             animatable.snapTo(currentOffset)
@@ -335,6 +337,7 @@ private fun VerticalWheel(
                             }
 
                             val targetOffset = targetIdx * itemHeightPx
+                            onValueSelected(floorMod(targetIdx, itemCount))
 
                             //动态计算动画时长：距离越长越长，范围 [300, 1000]ms
                             val distance = abs(targetOffset - currentOffset)

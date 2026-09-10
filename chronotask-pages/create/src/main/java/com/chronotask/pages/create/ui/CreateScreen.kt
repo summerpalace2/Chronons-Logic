@@ -84,9 +84,11 @@ import com.chronotask.pages.create.viewmodel.CreateViewModel
 fun CreateScreen(
     taskId: Long = -1,
     mode: CreateMode = CreateMode.Normal,
+    scheduledDate: Long = 0L,
     viewModel: CreateViewModel = viewModel()
 ) {
     LaunchedEffect(mode) { viewModel.setMode(mode) }
+    LaunchedEffect(scheduledDate) { viewModel.setScheduledDate(scheduledDate) }
 
     val isEditMode = taskId > 0
     LaunchedEffect(taskId) {
@@ -456,32 +458,40 @@ private fun TargetDurationCard(
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            val progress = if (isUnlimited) 0f else (hours * 60 + minutes) / 1440f
+            val progress = if (isUnlimited) 0f else ((hours * 60 + minutes).toFloat() / (24f * 60f)).coerceIn(0f, 1f)
+            val primaryColor = MaterialTheme.colorScheme.primary
+            val bgTrackColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            val strokeWidth = 6.dp
+
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.size(120.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                        .border(
-                            width = 4.dp,
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = CircleShape
+                androidx.compose.foundation.Canvas(modifier = Modifier.size(120.dp)) {
+                    val sw = strokeWidth.toPx()
+                    val r = (size.minDimension - sw) / 2
+                    val center = androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)
+                    drawCircle(
+                        color = bgTrackColor,
+                        radius = r,
+                        center = center,
+                        style = androidx.compose.ui.graphics.drawscope.Stroke(width = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
+                    )
+                    if (progress > 0f) {
+                        drawArc(
+                            color = primaryColor,
+                            startAngle = -90f,
+                            sweepAngle = progress * 360f,
+                            useCenter = false,
+                            topLeft = androidx.compose.ui.geometry.Offset(
+                                (size.width - r * 2) / 2,
+                                (size.height - r * 2) / 2
+                            ),
+                            size = androidx.compose.ui.geometry.Size(r * 2, r * 2),
+                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = sw, cap = androidx.compose.ui.graphics.StrokeCap.Round)
                         )
-                        .graphicsLayer {
-                            rotationZ = -90f
-                            clip = true
-                            shape = CircleShape
-                        }
-                )
+                    }
+                }
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     if (isUnlimited) {
                         Text(

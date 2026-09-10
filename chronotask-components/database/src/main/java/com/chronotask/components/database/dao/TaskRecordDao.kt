@@ -21,6 +21,73 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskRecordDao {
     /**
+     * 聚合指定时间范围内的总计时时长和有记录天数。
+     *
+     * 统计卡片只需要摘要值，不应为此加载整批 [TaskRecordEntity] 到应用层。
+     */
+    @Query(
+        "SELECT COALESCE(SUM(durationSeconds), 0) AS totalSeconds, " +
+            "COUNT(DISTINCT date) AS workDays " +
+            "FROM task_records " +
+            "WHERE date >= :startDate AND date < :endDate"
+    )
+    suspend fun getPeriodSummary(startDate: Long, endDate: Long): PeriodSummary
+
+    /** 按自然日聚合指定范围的计时时长，供周/月/年图表批量复用。 */
+    @Query(
+        "SELECT date, SUM(durationSeconds) AS totalSeconds " +
+            "FROM task_records " +
+            "WHERE date >= :startDate AND date < :endDate " +
+            "GROUP BY date " +
+            "ORDER BY date"
+    )
+    suspend fun getDailyDurations(startDate: Long, endDate: Long): List<DailyDuration>
+
+    /**
+     * 按自然日和标签聚合指定范围的计时时长。
+     *
+     * 图表一次预取全部日摘要，避免每个图表数据点重复查询数据库。
+     */
+    @Query(
+        "SELECT task_records.date AS date, " +
+            "COALESCE(tags.name, :uncategorizedName) AS tagName, " +
+            "SUM(task_records.durationSeconds) AS totalSeconds " +
+            "FROM task_records " +
+            "INNER JOIN tasks ON tasks.id = task_records.taskId " +
+            "LEFT JOIN tags ON tags.id = tasks.tagId " +
+            "WHERE task_records.date >= :startDate AND task_records.date < :endDate " +
+            "GROUP BY task_records.date, COALESCE(tags.name, :uncategorizedName) " +
+            "ORDER BY task_records.date"
+    )
+    suspend fun getDailyTagDurations(
+        startDate: Long,
+        endDate: Long,
+        uncategorizedName: String
+    ): List<DailyTagDuration>
+
+    /**
+     * 按标签聚合指定时间范围的计时时长。
+     *
+     * 在数据库内完成 task_records → tasks → tags 的关联，避免统计页先按任务
+     * 逐条回查任务和标签造成 N+1 查询。
+     */
+    @Query(
+        "SELECT COALESCE(tags.name, :uncategorizedName) AS tagName, " +
+            "SUM(task_records.durationSeconds) AS totalSeconds " +
+            "FROM task_records " +
+            "INNER JOIN tasks ON tasks.id = task_records.taskId " +
+            "LEFT JOIN tags ON tags.id = tasks.tagId " +
+            "WHERE task_records.date >= :startDate AND task_records.date < :endDate " +
+            "GROUP BY COALESCE(tags.name, :uncategorizedName) " +
+            "ORDER BY totalSeconds DESC"
+    )
+    suspend fun getTagDurationsByDateRange(
+        startDate: Long,
+        endDate: Long,
+        uncategorizedName: String
+    ): List<TagDuration>
+
+    /**
      * 根据任务 ID 和日期获取单条计时记录
      *
      * @param taskId 任务主键 ID

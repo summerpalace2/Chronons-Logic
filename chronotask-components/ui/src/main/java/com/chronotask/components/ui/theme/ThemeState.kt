@@ -47,15 +47,11 @@ val LocalChronoThemeIndex = staticCompositionLocalOf<MutableState<Int>> {
  * @return 当前主题索引的 [MutableState]，写入即触发 UI 重组，
  *         同时可通过 [selectTheme] 持久化到 DataStore。
  */
-@SuppressLint("UnrememberedMutableState")
 @Composable
 fun rememberChronoThemeState(): MutableState<Int> {
-    val scope = rememberCoroutineScope()
     val persistedIndex = appDataStore.themeIndex.collectAsState(initial = 0)
-    val state = mutableStateOf(persistedIndex.value)
-    // 同步 DataStore → State
-    @Suppress("DEPRECATION")
-    // 当 DataStore 变化时更新 state（仅跨进程场景）
+    val state = androidx.compose.runtime.remember { mutableStateOf(persistedIndex.value) }
+    // 当 DataStore 变化时更新 state
     androidx.compose.runtime.LaunchedEffect(persistedIndex.value) {
         state.value = persistedIndex.value
     }

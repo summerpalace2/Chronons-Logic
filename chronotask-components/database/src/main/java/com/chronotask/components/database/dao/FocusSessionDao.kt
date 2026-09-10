@@ -17,6 +17,10 @@ interface FocusSessionDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(session: FocusSessionEntity): Long
 
+    /** 删除任务时同步删除其已完成专注会话，避免统计保留已删除任务的数据。 */
+    @Query("DELETE FROM focus_sessions WHERE taskId = :taskId")
+    suspend fun deleteByTaskId(taskId: Long)
+
     /**
      * 统计时间范围内符合专注规则的会话数量。
      *

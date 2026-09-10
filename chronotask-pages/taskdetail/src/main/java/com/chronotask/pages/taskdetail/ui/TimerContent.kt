@@ -130,10 +130,10 @@ internal fun TimerContent(
     // 6. 弹窗
     if (showManualTimePicker) {
         VerticalTimePickerDialog(
-            initialHours = elapsedSeconds.toInt() / 3600,
-            initialMinutes = (elapsedSeconds.toInt() % 3600) / 60,
+            initialHours = totalSeconds.toInt() / 3600,
+            initialMinutes = (totalSeconds.toInt() % 3600) / 60,
             onConfirm = { hours, minutes ->
-                viewModel.addManualTime(hours, minutes)
+                viewModel.setElapsedTime(hours, minutes)
                 showManualTimePicker = false
             },
             onDismiss = { showManualTimePicker = false }
@@ -437,7 +437,7 @@ private fun HonestyDialog(onDismiss: () -> Unit) {
         },
         text = {
             Text(
-                text = "如果当天完成任务时忘记计时，可以手动编辑大概时间，切记不要自己欺骗自己！",
+                text = stringResource(R.string.honesty_reminder),
                 style = MaterialTheme.typography.bodyMedium
             )
         }

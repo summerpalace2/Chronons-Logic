@@ -1,3 +1,5 @@
+import com.chronotask.buildlogic.convention.useNav
+
 plugins {
     alias(libs.plugins.chronotask.application)
     alias(libs.plugins.kotlin.compose)
@@ -10,6 +12,8 @@ android {
     }
 }
 
+useNav()
+
 dependencies {
     implementation(projects.chronotaskComponents.common)
     implementation(libs.androidx.lifecycle.process)
@@ -21,6 +25,7 @@ dependencies {
     implementation(projects.chronotaskPages.create.api)
     implementation(projects.chronotaskPages.stats)
     implementation(projects.chronotaskPages.stats.api)
+    implementation(projects.chronotaskPages.notes)
     implementation(projects.chronotaskPages.settings)
     implementation(projects.chronotaskPages.settings.api)
     implementation(projects.chronotaskPages.taskdetail)

@@ -17,6 +17,6 @@ import com.chronotask.pages.create.ui.CreateScreen
 class CreateDestination : AppNavEntry<CreateArgument>() {
     @Composable
     override fun Content(argument: CreateArgument) {
-        CreateScreen(taskId = argument.taskId, mode = argument.mode)
+        CreateScreen(taskId = argument.taskId, mode = argument.mode, scheduledDate = argument.scheduledDate)
     }
 }

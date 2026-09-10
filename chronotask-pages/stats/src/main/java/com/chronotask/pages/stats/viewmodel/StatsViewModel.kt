@@ -4,15 +4,17 @@ import androidx.lifecycle.viewModelScope
 import com.chronotask.components.common.TimerManager
 import com.chronotask.components.common.appApplication
 import com.chronotask.components.ui.theme.LocaleManager
-import com.chronotask.components.common.appIoScope
 import com.chronotask.components.common.base.BaseViewModel
 import com.chronotask.components.database.AppDatabase
+import com.chronotask.components.database.dao.DailyTagDuration
 import com.chronotask.components.database.repository.FocusSessionRepository
 import com.chronotask.components.ui.R
 import com.chronotask.pages.stats.data.StatsPeriod
+import com.chronotask.pages.stats.data.StatsPeriodRangeCalculator
 import com.chronotask.pages.stats.data.StatsState
 import com.chronotask.pages.stats.data.TagDistribution
 import com.chronotask.pages.stats.ui.LineChartDataPoint
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -24,14 +26,12 @@ import java.util.Calendar
  * 核心职责：管理统计数据加载、周期切换、图表数据生成。
  *
  * 协程策略：
- * - loadStats() 涉及数据库读取，使用 appIoScope 保活
- * - generateChartData() 是纯计算，直接在协程内执行
+ * - loadStats() 由 viewModelScope 管理；新请求会取消旧请求
+ * - generateChartData() 先批量读取日摘要，再在内存组合图表数据点
  */
 class StatsViewModel : BaseViewModel() {
     private val db = AppDatabase.getDatabase(appApplication)
     private val recordDao = db.taskRecordDao()
-    private val tagDao = db.tagDao()
-    private val taskDao = db.taskDao()
     private val restDao = db.dailyRestDao()
 
     private val _state = MutableStateFlow(StatsState())
@@ -39,6 +39,9 @@ class StatsViewModel : BaseViewModel() {
 
     private val _selectedPeriod = MutableStateFlow(StatsPeriod.WEEK)
     val selectedPeriod: StateFlow<StatsPeriod> = _selectedPeriod
+
+    private val requestGate = StatsRequestGate()
+    private var statsLoadJob: Job? = null
 
     init {
         loadStats()
@@ -74,37 +77,42 @@ class StatsViewModel : BaseViewModel() {
     }
 
     private fun loadStats() {
-        appIoScope.launch {
-            val period = _selectedPeriod.value
+        // 周期切换和语言切换都只关心最新结果；版本检查同时覆盖不及时响应取消的底层读取。
+        val requestId = requestGate.beginRequest()
+        statsLoadJob?.cancel()
+        val period = _selectedPeriod.value
+        statsLoadJob = viewModelScope.launch {
             val now = System.currentTimeMillis()
-            val (start, end) = getPeriodRange(period, now)
-            val prevStart = start - (end - start)
+            val currentRange = StatsPeriodRangeCalculator.current(period, now)
+            val start = currentRange.start
+            val end = currentRange.end
+            val prevStart = StatsPeriodRangeCalculator.previous(period, start).start
 
-            // 读取数据库记录
-            val records = recordDao.getRecordsByDateRange(start, end)
-            val prevRecords = recordDao.getRecordsByDateRange(prevStart, start)
+            // 统计卡片只读取聚合结果，不加载整批计时记录。
+            val summary = recordDao.getPeriodSummary(start, end)
+            val prevSummary = recordDao.getPeriodSummary(prevStart, start)
             val focusCount = FocusSessionRepository.countQualifiedByDateRange(
                 startDate = start,
                 endDate = end,
                 thresholdSeconds = TimerManager.FOCUS_SESSION_THRESHOLD_SECONDS
             )
 
-            // 聚合计算
-            val totalSeconds = records.sumOf { it.durationSeconds }
-            val prevTotalSeconds = prevRecords.sumOf { it.durationSeconds }
+            val totalSeconds = summary.totalSeconds
+            val prevTotalSeconds = prevSummary.totalSeconds
 
             // 日均计算：从周期开始到今天的实际天数（起始日为第1天）
             val daysElapsed = ((now - start) / (24 * 60 * 60 * 1000)).toInt() + 1
-            val avgSeconds = if (records.isNotEmpty()) totalSeconds / daysElapsed else 0L
-            val workDays = records.map { it.date }.distinct().size
+            val avgSeconds = if (totalSeconds > 0L) totalSeconds / daysElapsed else 0L
+            val workDays = summary.workDays
 
             // 生成图表和分布数据
-            val tagDistributions = calculateTagDistribution(records)
+            val tagDistributions = loadTagDistribution(start, end, totalSeconds)
             val chartData = generateChartData(period, start, end)
             val trend = if (prevTotalSeconds > 0)
                 (totalSeconds - prevTotalSeconds).toFloat() / prevTotalSeconds
             else 0f
 
+            if (!requestGate.isLatest(requestId)) return@launch
             _state.value = StatsState(
                 periodTotalSeconds = totalSeconds,
                 periodAvgSeconds = avgSeconds,
@@ -119,74 +127,29 @@ class StatsViewModel : BaseViewModel() {
     }
 
     /**
-     * 计算周期时间范围
-     * @param period 统计周期
-     * @param now 当前时间戳（毫秒）
-     * @return Pair<startMs, endMs>
-     */
-    private fun getPeriodRange(period: StatsPeriod, now: Long): Pair<Long, Long> {
-        val cal = Calendar.getInstance()
-        cal.timeInMillis = now
-        cal.set(Calendar.HOUR_OF_DAY, 0)
-        cal.set(Calendar.MINUTE, 0)
-        cal.set(Calendar.SECOND, 0)
-        cal.set(Calendar.MILLISECOND, 0)
-        return when (period) {
-            StatsPeriod.WEEK -> {
-                val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
-                val offset = if (dayOfWeek == Calendar.SUNDAY) 6 else dayOfWeek - Calendar.MONDAY
-                cal.add(Calendar.DAY_OF_MONTH, -offset)
-                val start = cal.timeInMillis
-                cal.add(Calendar.DAY_OF_MONTH, 7)
-                Pair(start, cal.timeInMillis)
-            }
-            StatsPeriod.MONTH -> {
-                cal.set(Calendar.DAY_OF_MONTH, 1)
-                val start = cal.timeInMillis
-                cal.add(Calendar.MONTH, 1)
-                Pair(start, cal.timeInMillis)
-            }
-            StatsPeriod.YEAR -> {
-                cal.set(Calendar.DAY_OF_YEAR, 1)
-                val start = cal.timeInMillis
-                cal.add(Calendar.YEAR, 1)
-                Pair(start, cal.timeInMillis)
-            }
-        }
-    }
-
-    /**
-     * 计算标签时长分布
+     * 从数据库加载标签时长分布。
      *
-     * 按 taskId 聚合后查找 tag，避免同名 tag 重复。
+     * 标签关联和时长聚合均在 SQL 中完成，避免按任务逐条回查数据库。
      *
-     * @param records 当前周期的任务记录列表
      * @return 按时长降序排列的标签分布列表
      */
-    private suspend fun calculateTagDistribution(
-        records: List<com.chronotask.components.database.entity.TaskRecordEntity>
+    private suspend fun loadTagDistribution(
+        startDate: Long,
+        endDate: Long,
+        totalSeconds: Long
     ): List<TagDistribution> {
-        if (records.isEmpty()) return emptyList()
-        val totalSeconds = records.sumOf { it.durationSeconds }
-        if (totalSeconds == 0L) return emptyList()
-        val tags = tagDao.getAllTagsSync()
-        return records.groupBy { it.taskId }
-            .mapNotNull { (taskId, taskRecords) ->
-                val task = taskDao.getTaskById(taskId) ?: return@mapNotNull null
-                val tag = tags.find { it.id == task.tagId }
-                val seconds = taskRecords.sumOf { it.durationSeconds }
-                Pair(tag?.name ?: appApplication.getString(R.string.uncategorized), seconds)
-            }
-            .groupBy { it.first }
-            .map { (tagName, entries) ->
-                val totalSec = entries.sumOf { it.second }
-                TagDistribution(
-                    tagName = tagName,
-                    totalSeconds = totalSec,
-                    percentage = totalSec.toFloat() / totalSeconds
-                )
-            }
-            .sortedByDescending { it.totalSeconds }
+        if (totalSeconds <= 0L) return emptyList()
+        return recordDao.getTagDurationsByDateRange(
+            startDate = startDate,
+            endDate = endDate,
+            uncategorizedName = appApplication.getString(R.string.uncategorized)
+        ).map { row ->
+            TagDistribution(
+                tagName = row.tagName,
+                totalSeconds = row.totalSeconds,
+                percentage = row.totalSeconds.toFloat() / totalSeconds
+            )
+        }
     }
 
     /**
@@ -205,7 +168,19 @@ class StatsViewModel : BaseViewModel() {
         start: Long,
         end: Long
     ): List<LineChartDataPoint> {
-        val tags = tagDao.getAllTagsSync()
+        val chartData = ChartDataSource(
+            dailyDurations = recordDao.getDailyDurations(start, end).associate { it.date to it.totalSeconds },
+            dailyTagDurations = recordDao.getDailyTagDurations(
+                startDate = start,
+                endDate = end,
+                uncategorizedName = appApplication.getString(R.string.uncategorized)
+            ).groupBy { it.date },
+            restDays = if (period == StatsPeriod.WEEK) {
+                restDao.getRestDaysInRange(start, end - 1).map { it.date }.toSet()
+            } else {
+                emptySet()
+            }
+        )
         val points = mutableListOf<LineChartDataPoint>()
         var index = 1
 
@@ -220,7 +195,7 @@ class StatsViewModel : BaseViewModel() {
                 var current = start
                 while (current < end) {
                     val next = minOf(current + step, end)
-                    addChartPoint(points, current, next, tags, appApplication.getString(if (period == StatsPeriod.WEEK) R.string.chart_day_label else R.string.chart_week_label, index.toString()))
+                    addChartPoint(chartData, points, current, next, appApplication.getString(if (period == StatsPeriod.WEEK) R.string.chart_day_label else R.string.chart_week_label, index.toString()))
                     index++
                     current = next
                 }
@@ -239,7 +214,7 @@ class StatsViewModel : BaseViewModel() {
                     val monthStart = cal.timeInMillis
                     cal.add(Calendar.MONTH, 1)
                     val monthEnd = minOf(cal.timeInMillis, end)
-                    addChartPoint(points, monthStart, monthEnd, tags, appApplication.getString(R.string.chart_month_label, index.toString()))
+                    addChartPoint(chartData, points, monthStart, monthEnd, appApplication.getString(R.string.chart_month_label, index.toString()))
                     index++
                 }
             }
@@ -252,24 +227,25 @@ class StatsViewModel : BaseViewModel() {
      *
      * 提取公共逻辑，消除 WEEK/MONTH/YEAR 分支中的重复代码。
      *
+     * @param chartData 当前图表预取的日摘要
      * @param points 目标列表
      * @param rangeStart 时间窗口开始
      * @param rangeEnd 时间窗口结束
-     * @param tags 所有标签列表（避免重复查询）
-     * @param index 当前序号
      * @param label 数据点标签文本
      */
-    private suspend fun addChartPoint(
+    private fun addChartPoint(
+        chartData: ChartDataSource,
         points: MutableList<LineChartDataPoint>,
         rangeStart: Long,
         rangeEnd: Long,
-        tags: List<com.chronotask.components.database.entity.TagEntity>,
         label: String
     ) {
-        val records = recordDao.getRecordsByDateRange(rangeStart, rangeEnd)
-        val totalSeconds = records.sumOf { it.durationSeconds }
-        val tagDistributions = calculatePointTagDistribution(records, totalSeconds, tags)
-        val isRestDay = restDao.getRestByDate(rangeStart)?.isRestDay ?: false
+        val totalSeconds = chartData.dailyDurations.entries
+            .asSequence()
+            .filter { (date, _) -> date >= rangeStart && date < rangeEnd }
+            .sumOf { it.value }
+        val tagDistributions = chartData.tagDistribution(rangeStart, rangeEnd, totalSeconds)
+        val isRestDay = rangeStart in chartData.restDays
         points.add(
             LineChartDataPoint(
                 label = label,
@@ -280,36 +256,32 @@ class StatsViewModel : BaseViewModel() {
         )
     }
 
-    /**
-     * 计算单个数据点的标签分布
-     *
-     * @param records 该时间窗口内的记录
-     * @param totalSeconds 该窗口的总秒数
-     * @param tags 所有标签列表（避免重复查询）
-     * @return 标签分布列表
-     */
-    private suspend fun calculatePointTagDistribution(
-        records: List<com.chronotask.components.database.entity.TaskRecordEntity>,
-        totalSeconds: Long,
-        tags: List<com.chronotask.components.database.entity.TagEntity>
-    ): List<TagDistribution> {
-        if (records.isEmpty() || totalSeconds <= 0) return emptyList()
-        return records.groupBy { it.taskId }
-            .mapNotNull { (taskId, taskRecords) ->
-                val task = taskDao.getTaskById(taskId) ?: return@mapNotNull null
-                val tag = tags.find { it.id == task.tagId }
-                val seconds = taskRecords.sumOf { it.durationSeconds }
-                Pair(tag?.name ?: appApplication.getString(R.string.uncategorized), seconds)
+    private data class ChartDataSource(
+        val dailyDurations: Map<Long, Long>,
+        val dailyTagDurations: Map<Long, List<DailyTagDuration>>,
+        val restDays: Set<Long>
+    ) {
+        fun tagDistribution(
+            rangeStart: Long,
+            rangeEnd: Long,
+            totalSeconds: Long
+        ): List<TagDistribution> {
+            if (totalSeconds <= 0L) return emptyList()
+            val totalsByTag = mutableMapOf<String, Long>()
+            dailyTagDurations.forEach { (date, durations) ->
+                if (date in rangeStart until rangeEnd) {
+                    durations.forEach { duration ->
+                        totalsByTag.merge(duration.tagName, duration.totalSeconds, Long::plus)
+                    }
+                }
             }
-            .groupBy { it.first }
-            .map { (tagName, entries) ->
-                val totalSec = entries.sumOf { it.second }
+            return totalsByTag.map { (tagName, seconds) ->
                 TagDistribution(
                     tagName = tagName,
-                    totalSeconds = totalSec,
-                    percentage = totalSec.toFloat() / totalSeconds
+                    totalSeconds = seconds,
+                    percentage = seconds.toFloat() / totalSeconds
                 )
-            }
-            .sortedByDescending { it.totalSeconds }
+            }.sortedByDescending { it.totalSeconds }
+        }
     }
 }

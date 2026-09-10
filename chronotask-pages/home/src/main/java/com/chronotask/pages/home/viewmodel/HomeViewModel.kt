@@ -2,6 +2,7 @@ package com.chronotask.pages.home.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.chronotask.components.common.DateUtils
+import com.chronotask.components.common.QuickImportManager
 import com.chronotask.components.common.QuickImportTask
 import com.chronotask.components.common.TimerManager
 import com.chronotask.components.common.appApplication
@@ -278,7 +279,11 @@ class HomeViewModel : BaseViewModel() {
 
     /** 删除指定任务 */
     fun deleteTask(taskId: Long) {
+        // 正在运行的会话尚未完成落库；必须先停止后才能删除，避免外键写入失败。
+        if (TimerManager.isRunning(taskId)) return
         appIoScope.launch {
+            // 在 IO 队列真正执行删除前再次确认，覆盖 UI 事件与异步调度之间的窗口。
+            if (TimerManager.isRunning(taskId)) return@launch
             TaskRepository.delete(taskId)
         }
     }
@@ -292,15 +297,13 @@ class HomeViewModel : BaseViewModel() {
     fun importQuickTask(qiTask: QuickImportTask, targetDate: Long = DateUtils.getTodayStart()) {
         appIoScope.launch {
             if (!WorkdayConfig.isWorkDay(targetDate)) return@launch
-            // 手动已创建同名任务时跳过，避免重复
-            val exists = TaskRepository.getTasksByDate(targetDate).first()
-            if (exists.any { it.title == qiTask.title }) return@launch
-            TaskRepository.insert(
+            TaskRepository.importQuickTaskIfMissing(
                 TaskEntity(
                     title = qiTask.title,
                     tagId = qiTask.tagId,
                     targetDurationMinutes = qiTask.targetMinutes,
-                    scheduledDate = targetDate
+                    scheduledDate = targetDate,
+                    quickImportKey = qiTask.title
                 )
             )
             // 记录当天已导入
@@ -325,26 +328,32 @@ class HomeViewModel : BaseViewModel() {
 
     // 公开方法 — 日期导航
 
-    /** 加载最近 30 天内已导入快速任务的日期。 */
+    /** 加载当前日期及近期已导入快速任务的状态。 */
     private fun loadImportedDays() {
         appIoScope.launch {
             try {
-                val enabled = com.chronotask.components.common.QuickImportManager.isEnabled.first()
-                if (!enabled) { synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() }; return@launch }
-                val tasks = com.chronotask.components.common.QuickImportManager.tasks.first()
-                if (tasks.isEmpty()) { synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() }; return@launch }
-                val titles = tasks.map { it.title }
-                val taskIds: List<Long> = try { db.taskDao().getIdsByTitles(titles) } catch (_: Exception) { emptyList() }
-                if (taskIds.isEmpty()) { synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() }; return@launch }
-                val now = System.currentTimeMillis()
-                val offsetMinutes = appDataStore.dayStartOffsetMinutes.first()
-                val activeNow = DateUtils.getActiveDayMidnight(now, offsetMinutes)
-                val start = DateUtils.getActiveDayMidnight(now - 30L * 24 * 60 * 60 * 1000, offsetMinutes)
-                val end = DateUtils.getNextDayStart(activeNow)
-                val records = try { db.taskRecordDao().getRecordsByDateRange(start, end) } catch (_: Exception) { emptyList() }
-                val matched: Set<Long> = records.filter { it.taskId in taskIds }.map { DateUtils.getDateStart(it.date) }.toSet()
-                synchronized(importStatusWrite) { _dayImportStatus.value = matched }
-            } catch (_: Exception) { synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() } }
+                val enabled = QuickImportManager.isEnabled.first()
+                if (!enabled) {
+                    synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() }
+                    return@launch
+                }
+                val quickTasks = QuickImportManager.tasks.first()
+                if (quickTasks.isEmpty()) {
+                    synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() }
+                    return@launch
+                }
+                val quickTitles = quickTasks.map { it.title }.toSet()
+                val date = _selectedDate.value
+                val existingTasks = TaskRepository.getTasksByDate(date).first()
+                val existingTitles = existingTasks.map { it.title }.toSet()
+                if (existingTitles.containsAll(quickTitles)) {
+                    synchronized(importStatusWrite) { _dayImportStatus.value = _dayImportStatus.value + date }
+                } else {
+                    synchronized(importStatusWrite) { _dayImportStatus.value = _dayImportStatus.value - date }
+                }
+            } catch (_: Exception) {
+                synchronized(importStatusWrite) { _dayImportStatus.value = emptySet() }
+            }
         }
     }
 

@@ -94,7 +94,9 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(backStack, openTaskId) {
                         NavBackStackHolder.initialize(backStack)
                         openTaskId?.let { taskId ->
-                            TaskDetailArgument(taskId, DateUtils.getTodayStart()).navigate()
+                            val offset = appDataStore.dayStartOffsetMinutes.first()
+                            val activeDay = DateUtils.getActiveDayMidnight(System.currentTimeMillis(), offset)
+                            TaskDetailArgument(taskId, activeDay).navigate()
                             pendingTaskId.value = null
                         }
                     }
@@ -120,37 +122,29 @@ class MainActivity : ComponentActivity() {
                         appIoScope.launch {
                             val enabled = appDataStore.quickImportEnabled.first()
                             if (enabled) {
-                                val todayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+                                val offsetMinutes = appDataStore.dayStartOffsetMinutes.first()
+                                val activeDayMidnight = DateUtils.getActiveDayMidnight(
+                                    System.currentTimeMillis(),
+                                    offsetMinutes
+                                )
+                                val activeDayStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(activeDayMidnight))
                                 val lastImport = appDataStore.lastImportDate.first()
-                                if (lastImport != todayStr) {
+                                if (lastImport != activeDayStr) {
                                     val quickTasks = QuickImportManager.tasks.first()
-                                    val offsetMinutes = appDataStore.dayStartOffsetMinutes.first()
-                                    val activeDayMidnight = DateUtils.getActiveDayMidnight(
-                                        System.currentTimeMillis(),
-                                        offsetMinutes
-                                    )
-                                    val existingTitles = try {
-                                        TaskRepository.getTasksByDate(activeDayMidnight).first()
-                                            .map { it.title }
-                                            .toSet()
-                                    } catch (_: Exception) {
-                                        emptySet<String>()
-                                    }
-                                    var imported = false
                                     quickTasks.forEach { quickTask ->
-                                        if (quickTask.title !in existingTitles) {
-                                            TaskRepository.insert(
-                                                TaskEntity(
-                                                    title = quickTask.title,
-                                                    tagId = quickTask.tagId,
-                                                    targetDurationMinutes = quickTask.targetMinutes,
-                                                    scheduledDate = activeDayMidnight
-                                                )
+                                        TaskRepository.importQuickTaskIfMissing(
+                                            TaskEntity(
+                                                title = quickTask.title,
+                                                tagId = quickTask.tagId,
+                                                targetDurationMinutes = quickTask.targetMinutes,
+                                                scheduledDate = activeDayMidnight,
+                                                quickImportKey = quickTask.title
                                             )
-                                            imported = true
-                                        }
+                                        )
                                     }
-                                    if (imported) appDataStore.setLastImportDate(todayStr)
+                                    if (quickTasks.isNotEmpty()) {
+                                        appDataStore.setLastImportDate(activeDayStr)
+                                    }
                                 }
                             }
                         }
