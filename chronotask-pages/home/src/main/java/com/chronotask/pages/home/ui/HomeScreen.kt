@@ -105,7 +105,7 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
             Spacer(modifier = Modifier.height(80.dp))
         }
 
-        TaskListFab(viewModel = viewModel, modifier = Modifier.align(Alignment.BottomEnd))
+        TaskListFab(viewModel = viewModel, selectedDate = selectedDate, modifier = Modifier.align(Alignment.BottomEnd))
 
     }
 
@@ -136,11 +136,11 @@ fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
  * FAB 悬浮按钮
  */
 @Composable
-private fun TaskListFab(viewModel: HomeViewModel, modifier: Modifier = Modifier) {
+private fun TaskListFab(viewModel: HomeViewModel, selectedDate: Long, modifier: Modifier = Modifier) {
     val isEditMode by viewModel.isEditMode.collectAsState()
     if (!isEditMode) {
         FloatingActionButton(
-            onClick = { com.chronotask.pages.create.api.CreateArgument.navigateForCreate() },
+            onClick = { com.chronotask.pages.create.api.CreateArgument.navigateForCreate(selectedDate) },
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
             shape = RoundedCornerShape(16.dp),

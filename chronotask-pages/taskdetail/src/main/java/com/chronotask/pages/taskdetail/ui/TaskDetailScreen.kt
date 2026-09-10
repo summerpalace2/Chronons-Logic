@@ -137,7 +137,7 @@ fun TaskDetailScreen(taskId: Long, date: Long = 0) {
                     1 -> NotesContent(
                         entity = currentNote,
                         onSave = { title, content ->
-                            viewModel.saveTaskNote(title, content)
+                            viewModel.saveTaskNote(title, content, currentNote?.id)
                         }
                     )
                 }

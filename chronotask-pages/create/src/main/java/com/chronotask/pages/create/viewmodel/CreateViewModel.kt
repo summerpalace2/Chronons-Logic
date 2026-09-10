@@ -36,6 +36,7 @@ class CreateViewModel : BaseViewModel() {
     private val tagDao = db.tagDao()
 
     private var mode: CreateMode = CreateMode.Normal
+    private var scheduledDate: Long = 0L
 
     // ── 表单状态 ──
 
@@ -69,6 +70,14 @@ class CreateViewModel : BaseViewModel() {
      */
     fun setMode(m: CreateMode) {
         mode = m
+    }
+
+    /**
+     * 设置任务计划日期
+     * @param date 计划日期时间戳（毫秒）
+     */
+    fun setScheduledDate(date: Long) {
+        scheduledDate = date
     }
 
     /**
@@ -178,7 +187,7 @@ class CreateViewModel : BaseViewModel() {
      */
     private fun resolveTargetMinutes(): Int? {
         val totalMin = _hours.value * 60 + _minutes.value
-        return if (_isUnlimited.value && totalMin == 0) null else totalMin
+        return if (_isUnlimited.value) null else if (totalMin > 0) totalMin else null
     }
 
     /**
@@ -203,6 +212,7 @@ class CreateViewModel : BaseViewModel() {
      */
     private fun saveNormalTask(title: String, targetMinutes: Int?) {
         val selectedTagId = _selectedTagId.value
+        val targetDate = if (scheduledDate > 0L) scheduledDate else DateUtils.getTodayStart()
         appIoScope.launch {
             val existingId = editingTaskId
             if (existingId != null) {
@@ -220,7 +230,7 @@ class CreateViewModel : BaseViewModel() {
                         title = title,
                         tagId = selectedTagId,
                         targetDurationMinutes = targetMinutes,
-                        scheduledDate = DateUtils.getTodayStart()
+                        scheduledDate = targetDate
                     )
                 )
             }

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Chronos Logic</string>
+
     <string name="notification_timer_channel">アクティブタイマー</string>
     <string name="notification_timer_channel_description">実行中のタスクタイマーを表示します</string>
     <string name="notification_timer_running">タイマー実行中</string>

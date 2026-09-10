@@ -276,14 +276,11 @@ private fun FunctionSection(scope: kotlinx.coroutines.CoroutineScope) {
             Spacer(Modifier.width(8.dp))
             Switch(
                 checked = quickImportEnabled,
-                onCheckedChange = { enabled ->
-                    scope.launch {
-                        QuickImportManager.setEnabled(enabled)
-                        if (!enabled && horizontalComparison) {
-                            appDataStore.setHorizontalComparison(false)
-                        }
-                    }
-                },
+            onCheckedChange = { enabled ->
+                scope.launch {
+                    QuickImportManager.setEnabled(enabled)
+                }
+            },
                 colors = SwitchDefaults.colors()
             )
         }
@@ -353,7 +350,11 @@ private fun FunctionSection(scope: kotlinx.coroutines.CoroutineScope) {
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    stringResource(if (workdayEnabled) R.string.workday_mode_toggle else R.string.workday_default),
+                    if (workdayEnabled && workdayWeekMask != 0x3E) {
+                        stringResource(R.string.workday_mode_toggle)
+                    } else {
+                        stringResource(R.string.workday_default)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -436,7 +437,10 @@ private fun FunctionSection(scope: kotlinx.coroutines.CoroutineScope) {
         WorkdayPickerDialog(
             currentMask = workdayWeekMask,
             onConfirm = { newMask ->
-                scope.launch { appDataStore.setWorkdayWeekMask(newMask) }
+                scope.launch {
+                    appDataStore.setWorkdayWeekMask(newMask)
+                    appDataStore.setWorkdayEnabled(true)
+                }
                 showWorkdayPicker = false
             },
             onDismiss = { showWorkdayPicker = false }

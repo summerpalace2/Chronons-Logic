@@ -244,15 +244,19 @@ fun TaskItem(
                         modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(MaterialTheme.colorScheme.primary)
-                            .clickableNoIndicator { onDelete() },
+                            .background(
+                                if (isRunning) MaterialTheme.colorScheme.surfaceVariant
+                                else MaterialTheme.colorScheme.primary
+                            )
+                            .clickableNoIndicator(enabled = !isRunning) { onDelete() },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(R.string.delete),
                             modifier = Modifier.size(20.dp),
-                            tint = MaterialTheme.colorScheme.onPrimary
+                            tint = if (isRunning) MaterialTheme.colorScheme.onSurfaceVariant
+                            else MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -292,7 +296,8 @@ fun TaskItem(
                         Box(
                             modifier = Modifier
                                 .size(48.dp)
-                                .clip(CircleShape),
+                                .clip(CircleShape)
+                                .clickableNoIndicator { onComplete() },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(

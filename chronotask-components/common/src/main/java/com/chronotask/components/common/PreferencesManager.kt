@@ -136,7 +136,7 @@ object appDataStore {
     // 7 bit 位掩码：bit0 = 周日, bit1 = 周一, ... bit6 = 周六, 1 = 启用
     private val WORKDAY_WEEK_MASK = intPreferencesKey("workday_week_mask")
     val workdayWeekMask: Flow<Int> =
-        dataStore().data.map { it[WORKDAY_WEEK_MASK] ?: 0x7E }.distinctUntilChanged()  // 默认周一~五
+        dataStore().data.map { it[WORKDAY_WEEK_MASK] ?: 0x3E }.distinctUntilChanged()  // 默认周一~五 (0x3E = 62)
 
     suspend fun setWorkdayWeekMask(mask: Int) {
         dataStore().edit { it[WORKDAY_WEEK_MASK] = mask }

@@ -223,12 +223,13 @@ class TaskDetailViewModel(
         val info = TimerManager.stopSessionDetailed() ?: return
         todayRecordLoadVersion++
         val totalElapsed = info.totalSeconds
-        // [修复] 保留已有计时 + 本次会话秒数（previous + 当前 session）
         val previousSeconds = _todayRecordSeconds.value
         val newTotal = previousSeconds + totalElapsed
-        // 先同步更新 UI，防止停止瞬间回弹
         _todayRecordSeconds.value = newTotal
-        loadComparisonData()
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(150L)
+            loadComparisonData()
+        }
     }
 
     // ── 笔记操作（使用 appIoScope 保活） ──────────────────
@@ -257,13 +258,12 @@ class TaskDetailViewModel(
 
     /**
      * 保存任务笔记
-     * 更新最新笔记的标题和内容；若无笔记则新建一条。
+     * 若指定了已有笔记 ID 则更新；否则创建新笔记。
      */
-    fun saveTaskNote(title: String, content: String) {
+    fun saveTaskNote(title: String, content: String, noteId: Long? = null) {
         appIoScope.launch {
-            val existing = noteHistory.value.firstOrNull()
-            if (existing != null) {
-                NoteHistoryRepository.updateNoteAndTitle(existing.id, content, title)
+            if (noteId != null && noteId > 0L) {
+                NoteHistoryRepository.updateNoteAndTitle(noteId, content, title)
             } else {
                 NoteHistoryRepository.insertNote(
                     NoteHistoryEntity(

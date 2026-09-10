@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Chronos Logic</string>
+
     <string name="notification_timer_channel">活動計時</string>
     <string name="notification_timer_channel_description">顯示正在進行的任務計時</string>
     <string name="notification_timer_running">計時中</string>
-    <string name="notification_timer_paused">計時已暫停</string>
+    <string name="notification_timer_paused">計时已暫停</string>
     <string name="notification_timer_fallback_task">專注任務</string>
     <string name="notification_timer_pause">暫停</string>
     <string name="notification_timer_resume">繼續</string>

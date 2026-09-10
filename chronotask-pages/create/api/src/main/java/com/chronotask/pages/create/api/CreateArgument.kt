@@ -15,11 +15,12 @@ enum class CreateMode { Normal, QuickImport }
 @Serializable
 data class CreateArgument(
     val taskId: Long = -1,
-    val mode: CreateMode = CreateMode.Normal
+    val mode: CreateMode = CreateMode.Normal,
+    val scheduledDate: Long = 0L
 ) : AppNavArgument {
     companion object {
-        fun navigateForCreate() {
-            CreateArgument(taskId = -1, mode = CreateMode.Normal).navigate()
+        fun navigateForCreate(scheduledDate: Long = 0L) {
+            CreateArgument(taskId = -1, mode = CreateMode.Normal, scheduledDate = scheduledDate).navigate()
         }
         fun navigateForEdit(taskId: Long) {
             CreateArgument(taskId = taskId, mode = CreateMode.Normal).navigate()

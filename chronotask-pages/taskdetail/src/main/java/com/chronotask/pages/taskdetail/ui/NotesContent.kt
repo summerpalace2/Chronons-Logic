@@ -77,7 +77,7 @@ internal fun NotesContent(
                 text = stringResource(R.string.note_label),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f).padding(start = 20.dp).size(18.dp)
+                modifier = Modifier.weight(1f).padding(start = 20.dp)
             )
             if (readOnly) {
                 IconButton(onClick = { editorMode = true }, modifier = Modifier.padding(end = 10.dp).size(32.dp)) {

@@ -138,7 +138,7 @@ fun LineChart(
                     .pointerInput(data, scrollState) {
                         detectTapGestures(
                             onTap = { offset ->
-                                val canvasX = offset.x
+                                val canvasX = offset.x + scrollState.value
                                 handleSelection(canvasX, pointOffsetsState, scrollState, density, pointSpacing, data, selectedIndex) { index ->
                                     selectedIndex = index
                                     onPointSelected(index, if (index >= 0) data[index] else null)
