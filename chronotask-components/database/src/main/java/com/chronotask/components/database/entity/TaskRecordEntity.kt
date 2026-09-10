@@ -22,7 +22,10 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [Index(value = ["taskId", "date"])]
+    indices = [
+        Index(value = ["taskId", "date"]),
+        Index(value = ["date"])
+    ]
 )
 data class TaskRecordEntity(
     @PrimaryKey(autoGenerate = true)

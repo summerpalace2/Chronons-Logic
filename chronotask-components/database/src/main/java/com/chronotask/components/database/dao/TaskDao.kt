@@ -73,6 +73,15 @@ interface TaskDao {
     suspend fun insertTask(task: TaskEntity): Long
 
     /**
+     * 快速导入专用写入。唯一索引发生冲突时忽略，保证并发触发不会生成重复任务。
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertQuickImportTask(task: TaskEntity): Long
+
+    @Query("SELECT EXISTS(SELECT 1 FROM tasks WHERE scheduledDate = :scheduledDate AND title = :title)")
+    suspend fun hasTaskWithTitleOnDate(title: String, scheduledDate: Long): Boolean
+
+    /**
      * 更新一条已存在的任务
      *
      * 根据主键匹配并更新字段。

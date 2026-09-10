@@ -22,7 +22,11 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.SET_NULL
         )
     ],
-    indices = [Index(value = ["tagId"]), Index(value = ["scheduledDate"])]
+    indices = [
+        Index(value = ["tagId"]),
+        Index(value = ["scheduledDate"]),
+        Index(value = ["scheduledDate", "quickImportKey"], unique = true)
+    ]
 )
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
@@ -47,6 +51,11 @@ data class TaskEntity(
 
     /** 计划日期（当天零点时间戳），0 表示未指定 */
     val scheduledDate: Long = 0L,
+
+    /**
+     * 快速导入任务的幂等键；普通任务为 null，因此不限制普通任务的同名创建。
+     */
+    val quickImportKey: String? = null,
 
     /** 排序序号，数值越小越靠前 */
     val sortOrder: Int = 0

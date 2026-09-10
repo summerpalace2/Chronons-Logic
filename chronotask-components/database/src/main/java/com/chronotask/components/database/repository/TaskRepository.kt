@@ -1,5 +1,6 @@
 ﻿package com.chronotask.components.database.repository
 
+import androidx.room.withTransaction
 import com.chronotask.components.database.AppDatabase
 import com.chronotask.components.database.entity.TaskEntity
 import com.chronotask.components.common.appApplication
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.Flow
  * 采用单例模式，无状态，仅委托调用 DAO。
  */
 object TaskRepository {
-    private val dao = AppDatabase.getDatabase(appApplication).taskDao()
+    private val database = AppDatabase.getDatabase(appApplication)
+    private val dao = database.taskDao()
 
     /**
      * 全量任务的响应式 Flow
@@ -42,16 +44,38 @@ object TaskRepository {
     suspend fun insert(task: TaskEntity) = dao.insertTask(task)
 
     /**
+     * 幂等导入快速任务。
+     *
+     * 先兼容历史或手动创建的同名任务；真正的并发兜底由
+     * tasks(scheduledDate, quickImportKey) 唯一索引和 IGNORE 写入承担。
+     */
+    suspend fun importQuickTaskIfMissing(task: TaskEntity): Boolean {
+        require(!task.quickImportKey.isNullOrBlank()) { "quickImportKey is required" }
+        return database.withTransaction {
+            if (dao.hasTaskWithTitleOnDate(task.title, task.scheduledDate)) {
+                false
+            } else {
+                dao.insertQuickImportTask(task) != -1L
+            }
+        }
+    }
+
+    /**
      * 更新任务信息
      * @param task 待更新的任务实体（需包含主键 ID）
      */
     suspend fun update(task: TaskEntity) = dao.updateTask(task)
 
     /**
-     * 删除指定任务
-     * @param taskId 任务 ID
+     * 删除已停止任务及其历史数据。
+     *
+     * task_records 会通过外键级联删除；focus_sessions 没有外键，必须显式删除。
+     * 两步在同一事务内完成，避免统计保留已删除任务的历史。
      */
-    suspend fun delete(taskId: Long) = dao.deleteTask(taskId)
+    suspend fun delete(taskId: Long) = database.withTransaction {
+        database.focusSessionDao().deleteByTaskId(taskId)
+        dao.deleteTask(taskId)
+    }
 
     /**
      * 按日期获取当天安排的任务列表（响应式 Flow）
