@@ -169,7 +169,8 @@ object TaskRecordRepository {
     suspend fun getWeekAverageByIds(taskIds: List<Long>, today: Long): Long {
         if (taskIds.isEmpty()) return 0
         val weekStart = com.chronotask.components.common.DateUtils.getWeekStart(today)
-        val total = dao.sumDurationBetweenByIds(taskIds, weekStart, today)
+        val tomorrow = today + 24 * 60 * 60 * 1000L
+        val total = dao.sumDurationBetweenByIds(taskIds, weekStart, tomorrow)
         if (total <= 0) return 0
         val days = ((today - weekStart) / (24 * 60 * 60 * 1000L)).toInt() + 1
         return total / days
@@ -181,7 +182,8 @@ object TaskRecordRepository {
     suspend fun getMonthAverageByIds(taskIds: List<Long>, today: Long): Long {
         if (taskIds.isEmpty()) return 0
         val monthStart = com.chronotask.components.common.DateUtils.getMonthStart(today)
-        val total = dao.sumDurationBetweenByIds(taskIds, monthStart, today)
+        val tomorrow = today + 24 * 60 * 60 * 1000L
+        val total = dao.sumDurationBetweenByIds(taskIds, monthStart, tomorrow)
         if (total <= 0) return 0
         val days = ((today - monthStart) / (24 * 60 * 60 * 1000L)).toInt() + 1
         return total / days
